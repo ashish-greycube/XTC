@@ -1,0 +1,19 @@
+{% if name %}
+<div class="address-box">
+	<!-- <p class="h6">
+		<span class="text-muted">{{address_type}}</span>
+		{% if is_primary_address %}
+		<span class="text-muted">{{ _("Primary" )}}</span>
+		{% endif %}
+		{% if is_shipping_address %}
+		<span class="text-muted">{{ _("Shipping" )}}</span>
+		{% endif %}		
+	</p> -->
+	<!-- <p> -->
+		{{display}}
+
+	<!-- </p>		 -->
+</div>
+{% else %}
+	<p class="text-muted small">{{ _("No address added yet." )}}</p>
+{% endif %}

@@ -1,0 +1,100 @@
+{% if data|length > 0 %}
+<div class="page-break">
+	<div id="header-html" class="hidden-pdf">
+		{% if letter_head %}
+		<div class="letter-head text-center">{{ letter_head.content }}</div>
+		<hr style="height:2px;border-width:0;color:black;background-color:black;">
+		{% endif %}
+	</div>
+	<div id="footer-html" class="visible-pdf">
+		{% if letter_head.footer %}
+		<div class="letter-head-footer">
+			<hr style="border-width:0;color:black;background-color:black;padding-bottom:2px;">
+			{{ letter_head.footer }}
+		</div>
+		{% endif %}
+	</div>
+	<h2 class="text-center">{{ _("XTC STATEMENTS OF ACCOUNTS") }}</h2>
+	<div>
+		<h5 style="float: left;">{{ _("Customer Name: ") }} <b>{{filters.party[0] }}</b>
+		<br><Address>{{ _("Address:") }}{{filters.customer_address}}</Address></h5>
+		<h5 style="float: right;">{{ _("Date: ") }}<b>{{ frappe.format(filters.to_date, 'Date')}}</b><br>{{ _("Payment Terms: ") }}<b>{{filters.customer_payment_terms }}</b></h5>
+	</div>
+	<br>
+
+	<table class="table table-bordered" style="font-size: 12px">
+		<thead>
+			<tr>
+				<th style="width: 10%">{{ _("Date") }}</th>
+				<th style="width: 15%">{{ _("Reference") }}</th>
+				<th style="width: 15%">{{ _("Purchase Order") }}</th>
+				<th style="width: 10%">{{ _("Days Due") }}</th>
+				<th style="width: 15%">{{ _("Invoiced Amount") }}</th>
+				<th style="width: 10%">{{ _("Paid Amount") }}</th>
+				<th style="width: 10%">{{ _("Credit Note") }}</th>
+				<th style="width: 15%">{{ _("Outstanding Amount") }}</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for row in data %}
+			<tr>
+			{% if(row.posting_date) %}
+				<td>{{ frappe.format(row.posting_date, 'Date') }}</td>
+				<td>{{ row.voucher_type }}
+					<br>{{ row.voucher_no }}</td>
+				<td>{{ row.po_no }}</td>	
+				<td style="text-align: right">{{ row.age }}</td>
+				<td style="text-align: right">
+					{{ frappe.utils.fmt_money(row.invoiced, currency=filters.currency) }}</td>
+				<td style="text-align: right">
+					{{ frappe.utils.fmt_money(row.paid, currency=filters.currency) }}</td>
+				<td style="text-align: right">
+					{{ frappe.utils.fmt_money(row.credit_note, currency=filters.currency) }}</td>
+				<td style="text-align: right">
+					{{ frappe.utils.fmt_money(row.outstanding, currency=filters.currency) }}</td>
+			{% else %}
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>				
+			{% endif %}
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+	{% if filters.outstanding_total %}
+	<div  style="font-size: 14px;text-align: right">{{ _("Total Outstanding Amount: ") }}<b>{{frappe.utils.fmt_money(filters.outstanding_total, currency=filters.currency)}}</b></div>
+	{% endif %}
+	<br>
+	{% if filters.include_ageing == 1 %}
+	<h6 class="text-center">{{ _("Ageing Report based on ") }} {{ filters.ageing_based_on }}
+		{{ _("up to " ) }}  {{ frappe.format(filters.to_date, 'Date')}}
+	</h6>
+	<table class="table table-bordered" style="font-size: 12px">
+		<thead>
+			<tr>
+				<th style="width: 25%">30 Days</th>
+				<th style="width: 25%">60 Days</th>
+				<th style="width: 25%">90 Days</th>
+				<th style="width: 25%">120 Days</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>{{ frappe.utils.fmt_money(filters.total_range_1, currency=filters.currency) }}</td>
+				<td>{{ frappe.utils.fmt_money(filters.total_range_2, currency=filters.currency) }}</td>
+				<td>{{ frappe.utils.fmt_money(filters.total_range_3, currency=filters.currency) }}</td>
+				<td>{{ frappe.utils.fmt_money(filters.total_range_4, currency=filters.currency) }}</td>
+			</tr>
+		</tbody>
+	</table>
+	{% endif %}
+	
+	{% if terms_and_conditions %}
+	<div style="font-size: 14px;text-align: left">
+		{{ terms_and_conditions }}
+	</div>
+	{% endif %}
+</div>
+{% endif %}

@@ -259,7 +259,8 @@ def get_customer_emails(customer_name, primary_mandatory, billing_and_primary=Tr
 	"""Returns first email from Contact Email table as a Billing email
 	when Is Billing Contact checked
 	and Primary email- email with Is Primary checked"""
-
+	print('customer_name, primary_mandatory, billing_and_primary')
+	print(customer_name, primary_mandatory, billing_and_primary)
 	billing_email = frappe.db.sql(
 		"""
 		SELECT
@@ -267,16 +268,16 @@ def get_customer_emails(customer_name, primary_mandatory, billing_and_primary=Tr
 		FROM
 			`tabContact Email` AS email
 		JOIN
-			`tabDynamic Link` AS link
+			`tabDynamic Link` AS `link`
 		ON
-			email.parent=link.parent
+			email.parent=`link`.parent
 		JOIN
 			`tabContact` AS contact
 		ON
-			contact.name=link.parent
+			contact.name=`link`.parent
 		WHERE
-			link.link_doctype='Customer'
-			and link.link_name=%s
+			`link`.link_doctype='Customer'
+			and `link`.link_name=%s
 			and contact.is_billing_contact=1
 			{mcond}
 		ORDER BY
@@ -284,7 +285,7 @@ def get_customer_emails(customer_name, primary_mandatory, billing_and_primary=Tr
 		""".format(
 			mcond=get_match_cond("Contact")
 		),
-		customer_name,
+		customer_name
 	)
 
 	if len(billing_email) == 0 or (billing_email[0][0] is None):

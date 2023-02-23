@@ -59,7 +59,7 @@ def get_report_pdf(doc, consolidated=True):
 			from frappe.www.printview import get_letter_head
 
 			letter_head = get_letter_head(doc, 0)
-		addr_list=get_customer_primary_address('Customer',entry.customer)
+		addr_list=get_customer_primary_address('Customer',entry.customer) 
 		filters = frappe._dict(
 			{
 				"to_date": doc.to_date,
@@ -67,7 +67,7 @@ def get_report_pdf(doc, consolidated=True):
 				"party_type": "Customer",
 				"party": [entry.customer],
 				"customer_name":frappe.db.get_value('Customer', entry.customer, 'customer_name'),
-				"customer_address":  frappe.render_template("xtc/xtc/doctype/xtc_statement_of_accounts/address_list.html",addr_list or []),
+				"customer_address":  frappe.render_template("xtc/xtc/doctype/xtc_statement_of_accounts/address_list.html",addr_list) if addr_list else '',
 				"customer_payment_terms": frappe.db.get_value('Customer', entry.customer, 'payment_terms'),
 				"currency": presentation_currency,
 				"report_date":doc.to_date,

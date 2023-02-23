@@ -3,7 +3,6 @@
 	<div id="header-html" class="hidden-pdf">
 		{% if letter_head %}
 		<div class="letter-head text-center">{{ letter_head.content }}</div>
-		<hr style="height:2px;border-width:0;color:black;background-color:black;">
 		{% endif %}
 	</div>
 	<div id="footer-html" class="visible-pdf">
@@ -14,25 +13,41 @@
 		</div>
 		{% endif %}
 	</div>
-	<h2 class="text-center">{{ _("XTC STATEMENTS OF ACCOUNTS") }}</h2>
-	<div>
-		<h5 style="float: left;">{{ _("Customer Name: ") }} <b>{{filters.party[0] }}</b>
-		<br><Address>{{ _("Address:") }}{{filters.customer_address}}</Address></h5>
-		<h5 style="float: right;">{{ _("Date: ") }}<b>{{ frappe.format(filters.to_date, 'Date')}}</b><br>{{ _("Payment Terms: ") }}<b>{{filters.customer_payment_terms }}</b></h5>
-	</div>
-	<br>
-
+	<h4 class="text-right">{{ _("STATEMENT OF ACCOUNTS") }}</h4>
+	{% set font_size = frappe.db.get_value("Print Settings", "Print Settings", "font_size")|int %}
+	{% set font_size = 12 %}
+	
+	<hr style="height:2.5px;border-width:0;color:#D3D3D3;background-color:#D3D3D3;">	
+    <table style="font-size: {{font_size}}px; border-style: none">
+        <tbody>
+            <tr>
+                <th style="width: 20%"></th>
+                <th style="width: 35%"></th>
+                <th style="width: 20%"></th>
+                <th style="width: 25%"></th>
+            </tr>			
+            <tr>
+                <td><b>{{ _("Customer Name: ") }}</b></td>
+                <td colspan="2"><b>{{filters.party[0] }}</b></td>
+            </tr>
+            <tr>
+                <td style="vertical-align:top"><b>{{ _("Address:") }}</b></td>
+                <td >{{filters.customer_address}}</td>
+                <td style="vertical-align:top"><b>{{ _("Payment Terms: ") }}</b><br><b>{{ _("Date: ") }}</b></td>
+                <td style="vertical-align:top">{{filters.customer_payment_terms }}<br><b>{{ frappe.format(filters.to_date, 'Date')}}</b></td>                
+            </tr>            
+        </tbody>
+    </table>
 	<table class="table table-bordered" style="font-size: 12px">
 		<thead>
 			<tr>
-				<th style="width: 10%">{{ _("Date") }}</th>
-				<th style="width: 15%">{{ _("Reference") }}</th>
-				<th style="width: 15%">{{ _("Purchase Order") }}</th>
-				<th style="width: 10%">{{ _("Days Due") }}</th>
-				<th style="width: 15%">{{ _("Invoiced Amount") }}</th>
-				<th style="width: 10%">{{ _("Paid Amount") }}</th>
-				<th style="width: 10%">{{ _("Credit Note") }}</th>
-				<th style="width: 15%">{{ _("Outstanding Amount") }}</th>
+				<th style="width: 12%">{{ _("Date") }}</th>
+				<th style="width: 25%">{{ _("Document #") }}</th>
+				<th style="width: 10%">{{ _("Purchase Order") }}</th>
+				<th style="width: 8%;text-align: right">{{ _("Days Due") }}</th>
+				<th style="width: 15%;text-align: right">{{ _("Invoiced Amount") }}</th>
+				<th style="width: 15%;text-align: right">{{ _("Paid/Credited") }}</th>
+				<th style="width: 15%;text-align: right">{{ _("Outstanding Amount") }}</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -40,16 +55,13 @@
 			<tr>
 			{% if(row.posting_date) %}
 				<td>{{ frappe.format(row.posting_date, 'Date') }}</td>
-				<td>{{ row.voucher_type }}
-					<br>{{ row.voucher_no }}</td>
+				<td>{{ row.voucher_no }}</td>
 				<td>{{ row.po_no }}</td>	
 				<td style="text-align: right">{{ row.age }}</td>
 				<td style="text-align: right">
 					{{ frappe.utils.fmt_money(row.invoiced, currency=filters.currency) }}</td>
 				<td style="text-align: right">
-					{{ frappe.utils.fmt_money(row.paid, currency=filters.currency) }}</td>
-				<td style="text-align: right">
-					{{ frappe.utils.fmt_money(row.credit_note, currency=filters.currency) }}</td>
+					{{ frappe.utils.fmt_money(row.paid, currency=filters.currency) }}/{{ frappe.utils.fmt_money(row.credit_note, currency=filters.currency) }}</td>
 				<td style="text-align: right">
 					{{ frappe.utils.fmt_money(row.outstanding, currency=filters.currency) }}</td>
 			{% else %}
@@ -68,31 +80,34 @@
 	{% endif %}
 	<br>
 	{% if filters.include_ageing == 1 %}
-	<h6 class="text-center">{{ _("Ageing Report based on ") }} {{ filters.ageing_based_on }}
-		{{ _("up to " ) }}  {{ frappe.format(filters.to_date, 'Date')}}
-	</h6>
-	<table class="table table-bordered" style="font-size: 12px">
-		<thead>
+
+	<table style="width: 100%;font-size: {{font_size}}px; border-style: none">
+		<caption style="text-align: right"><b>{{ _("Ageing Report based on ") }} {{ filters.ageing_based_on }}
+			{{ _("up to " ) }}  {{ frappe.format(filters.to_date, 'Date')}}</b></caption>
+			<tbody>
 			<tr>
-				<th style="width: 25%">30 Days</th>
-				<th style="width: 25%">60 Days</th>
-				<th style="width: 25%">90 Days</th>
-				<th style="width: 25%">120 Days</th>
+				<th style="width: 20%">&nbsp;</th>
+				<th style="width: 20%;text-align: right">30 Days</th>
+				<th style="width: 20%;text-align: right">60 Days</th>
+				<th style="width: 20%;text-align: right">90 Days</th>
+				<th style="width: 20%;text-align: right">120 Days</th>
 			</tr>
-		</thead>
-		<tbody>
+
+
 			<tr>
-				<td>{{ frappe.utils.fmt_money(filters.total_range_1, currency=filters.currency) }}</td>
-				<td>{{ frappe.utils.fmt_money(filters.total_range_2, currency=filters.currency) }}</td>
-				<td>{{ frappe.utils.fmt_money(filters.total_range_3, currency=filters.currency) }}</td>
-				<td>{{ frappe.utils.fmt_money(filters.total_range_4, currency=filters.currency) }}</td>
+				<td>&nbsp;</td>
+				<td style="text-align: right">{{ frappe.utils.fmt_money(filters.total_range_1, currency=filters.currency) }}</td>
+				<td style="text-align: right">{{ frappe.utils.fmt_money(filters.total_range_2, currency=filters.currency) }}</td>
+				<td style="text-align: right">{{ frappe.utils.fmt_money(filters.total_range_3, currency=filters.currency) }}</td>
+				<td style="text-align: right">{{ frappe.utils.fmt_money(filters.total_range_4, currency=filters.currency) }}</td>
 			</tr>
 		</tbody>
 	</table>
 	{% endif %}
 	
 	{% if terms_and_conditions %}
-	<div style="font-size: 14px;text-align: left">
+	<br>
+	<div style="font-size: 13px;text-align: justify">
 		{{ terms_and_conditions }}
 	</div>
 	{% endif %}

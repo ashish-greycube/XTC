@@ -41,12 +41,12 @@
 	<table class="table table-bordered" style="font-size: 12px">
 		<thead>
 			<tr>
-				<th style="width: 12%">{{ _("Date") }}</th>
+				<th style="width: 15%">{{ _("Date") }}</th>
 				<th style="width: 25%">{{ _("Document #") }}</th>
 				<th style="width: 10%">{{ _("Purchase Order") }}</th>
 				<th style="width: 8%;text-align: right">{{ _("Days Due") }}</th>
 				<th style="width: 15%;text-align: right">{{ _("Invoiced Amount") }}</th>
-				<th style="width: 15%;text-align: right">{{ _("Paid/Credited") }}</th>
+				<th style="width: 12%;text-align: right">{{ _("Paid/ Credited") }}</th>
 				<th style="width: 15%;text-align: right">{{ _("Outstanding Amount") }}</th>
 			</tr>
 		</thead>
@@ -61,7 +61,7 @@
 				<td style="text-align: right">
 					{{ frappe.utils.fmt_money(row.invoiced, currency=filters.currency) }}</td>
 				<td style="text-align: right">
-					{{ frappe.utils.fmt_money(row.paid, currency=filters.currency) }}/{{ frappe.utils.fmt_money(row.credit_note, currency=filters.currency) }}</td>
+					{{ frappe.utils.fmt_money(row.paid+row.credit_note, currency=filters.currency) }}</td>
 				<td style="text-align: right">
 					{{ frappe.utils.fmt_money(row.outstanding, currency=filters.currency) }}</td>
 			{% else %}

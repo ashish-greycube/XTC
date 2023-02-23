@@ -89,7 +89,9 @@ frappe.ui.form.on('XTC Statement Of Accounts', {
 							frappe.throw(__('No Customers found with selected options.'));
 						}
 					}
-				}
+				},
+				freeze: true,
+				freeze_message: __('Fetching Customers.....')				
 			});
 		}
 		else {

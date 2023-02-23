@@ -67,7 +67,7 @@ def get_report_pdf(doc, consolidated=True):
 				"party_type": "Customer",
 				"party": [entry.customer],
 				"customer_name":frappe.db.get_value('Customer', entry.customer, 'customer_name'),
-				"customer_address":  frappe.render_template("xtc/xtc/doctype/xtc_statement_of_accounts/address_list.html",addr_list),
+				"customer_address":  frappe.render_template("xtc/xtc/doctype/xtc_statement_of_accounts/address_list.html",addr_list or []),
 				"customer_payment_terms": frappe.db.get_value('Customer', entry.customer, 'payment_terms'),
 				"currency": presentation_currency,
 				"report_date":doc.to_date,
@@ -259,8 +259,6 @@ def get_customer_emails(customer_name, primary_mandatory, billing_and_primary=Tr
 	"""Returns first email from Contact Email table as a Billing email
 	when Is Billing Contact checked
 	and Primary email- email with Is Primary checked"""
-	print('customer_name, primary_mandatory, billing_and_primary')
-	print(customer_name, primary_mandatory, billing_and_primary)
 	billing_email = frappe.db.sql(
 		"""
 		SELECT

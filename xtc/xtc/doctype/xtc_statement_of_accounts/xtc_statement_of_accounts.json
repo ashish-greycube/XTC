@@ -217,7 +217,7 @@
   {
    "fieldname": "cc_to",
    "fieldtype": "Link",
-   "label": "CC To",
+   "label": "BCC To",
    "options": "User"
   },
   {
@@ -246,7 +246,7 @@
   }
  ],
  "links": [],
- "modified": "2023-02-21 19:37:04.235953",
+ "modified": "2023-02-28 20:33:29.845585",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "XTC Statement Of Accounts",

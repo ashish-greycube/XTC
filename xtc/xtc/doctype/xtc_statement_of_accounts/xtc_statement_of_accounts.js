@@ -27,12 +27,16 @@ frappe.ui.form.on('XTC Statement Of Accounts', {
 			});
 			frm.add_custom_button(__('Download'), function(){
 				if (frm.is_dirty()) frappe.throw(__("Please save before proceeding."))
+				
 				let url = frappe.urllib.get_full_url(
 					'/api/method/xtc.xtc.doctype.xtc_statement_of_accounts.xtc_statement_of_accounts.download_statements?'
 					+ 'document_name='+encodeURIComponent(frm.doc.name))
-				$.ajax({
+				let btn_download = frm.custom_buttons['Download']	
+				btn_download.prop("disabled", true);
+				return $.ajax({
 					url: url,
 					type: 'GET',
+					async: true,
 					success: function(result) {
 						if(jQuery.isEmptyObject(result)){
 							frappe.msgprint(__('No Records for these settings.'));
@@ -40,7 +44,9 @@ frappe.ui.form.on('XTC Statement Of Accounts', {
 						else{
 							window.location = url;
 						}
-					}
+					},
+				}).always(function() {
+					btn_download.prop("disabled", false);
 				});
 			});
 		}

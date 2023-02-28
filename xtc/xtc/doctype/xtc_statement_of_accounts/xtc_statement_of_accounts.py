@@ -320,7 +320,7 @@ def send_emails(document_name, from_scheduler=False):
 		for customer, report_pdf in report.items():
 			attachments = [{"fname": customer + ".pdf", "fcontent": report_pdf}]
 
-			recipients, cc = get_recipients_and_cc(customer, doc)
+			recipients, bcc = get_recipients_and_cc(customer, doc)
 			if not recipients:
 				continue
 			context = get_context(customer, doc)
@@ -331,7 +331,7 @@ def send_emails(document_name, from_scheduler=False):
 				method=frappe.sendmail,
 				recipients=recipients,
 				sender=frappe.session.user,
-				cc=cc,
+				bcc=bcc,
 				subject=subject,
 				message=message,
 				now=True,

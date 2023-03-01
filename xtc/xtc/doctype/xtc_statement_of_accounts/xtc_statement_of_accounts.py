@@ -51,6 +51,7 @@ def get_report_pdf(doc, consolidated=True):
 
 	last_customer=doc.customers[-1]
 	for entry in doc.customers:
+		# frappe.publish_realtime("download_pdf_tool", dict(progress=[entry.idx, len(doc.customers)]), user=frappe.session.user)	
 		presentation_currency = (
 			get_party_account_currency("Customer", entry.customer, doc.company)
 			or get_company_currency(doc.company)
@@ -304,7 +305,8 @@ def get_customer_emails(customer_name, primary_mandatory, billing_and_primary=Tr
 @frappe.whitelist()
 def download_statements(document_name):
 	doc = frappe.get_doc("XTC Statement Of Accounts", document_name)
-	report = get_report_pdf(doc)
+	print('000',document_name)
+	report = get_report_pdf(doc,consolidated=True)
 	if report:
 		frappe.local.response.filename = doc.name + ".pdf"
 		frappe.local.response.filecontent = report

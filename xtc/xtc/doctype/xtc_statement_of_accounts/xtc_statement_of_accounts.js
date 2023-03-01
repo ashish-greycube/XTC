@@ -31,23 +31,34 @@ frappe.ui.form.on('XTC Statement Of Accounts', {
 				let url = frappe.urllib.get_full_url(
 					'/api/method/xtc.xtc.doctype.xtc_statement_of_accounts.xtc_statement_of_accounts.download_statements?'
 					+ 'document_name='+encodeURIComponent(frm.doc.name))
-				let btn_download = frm.custom_buttons['Download']	
-				btn_download.prop("disabled", true);
-				return $.ajax({
-					url: url,
-					type: 'GET',
-					async: true,
-					success: function(result) {
-						if(jQuery.isEmptyObject(result)){
-							frappe.msgprint(__('No Records for these settings.'));
-						}
-						else{
-							window.location = url;
-						}
-					},
-				}).always(function() {
-					btn_download.prop("disabled", false);
-				});
+				var w = window.open(
+					frappe.urllib.get_full_url(url)
+					
+				  );
+				  if (!w) {
+					frappe.msgprint(__("Please enable pop-ups"));
+					return;
+				  }
+														  
+				// return $.ajax({
+				// 	url: url,
+				// 	type: 'GET',
+				// 	async: true,
+				// 	success: function(result) {
+				// 		if(jQuery.isEmptyObject(result)){
+				// 			frappe.msgprint(__('No Records for these settings.'));
+				// 		}
+				// 		else{
+				// 			window.location = result;
+				// 			console.log(result)
+				// 			// btn_download.prop("disabled", false);
+				// 		}
+				// 	},
+				// }).always(function() {
+				// 	btn_download.prop("disabled", false);
+				// });						
+		
+
 			});
 		}
 	},

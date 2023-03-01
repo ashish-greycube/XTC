@@ -21,6 +21,7 @@ from erpnext.accounts.report.general_ledger.general_ledger import execute as get
 from erpnext.accounts.report.accounts_receivable.accounts_receivable import execute as get_xtc_soa
 import functools
 from frappe.contacts.doctype.address.address import get_address_display
+from frappe.email.smtp import get_default_outgoing_email_account
 
 
 class XTCStatementOfAccounts(Document):
@@ -317,7 +318,8 @@ def download_statements(document_name):
 def send_emails(document_name, from_scheduler=False):
 	doc = frappe.get_doc("XTC Statement Of Accounts", document_name)
 	report = get_report_pdf(doc, consolidated=False)
-
+	default_outgoing_account=get_default_outgoing_email_account(raise_exception_not_set=True)
+	sender_email_id= frappe.db.get_value('Email Account',default_outgoing_account.name, 'email_id')
 	if report:
 		for customer, report_pdf in report.items():
 			attachments = [{"fname": customer + ".pdf", "fcontent": report_pdf}]
@@ -332,7 +334,7 @@ def send_emails(document_name, from_scheduler=False):
 				queue="short",
 				method=frappe.sendmail,
 				recipients=recipients,
-				sender=frappe.session.user,
+				sender=sender_email_id,
 				bcc=bcc,
 				subject=subject,
 				message=message,

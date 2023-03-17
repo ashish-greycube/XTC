@@ -62,70 +62,76 @@ def get_report_pdf(doc, consolidated=True):
 
 			letter_head = get_letter_head(doc, 0)
 		addr_list=get_customer_primary_address('Customer',entry.customer) 
-		filters = frappe._dict(
-			{
-				"to_date": doc.to_date,
-				"company": doc.company,
-				"party_type": "Customer",
-				"party": [entry.customer],
-				"customer_name":frappe.db.get_value('Customer', entry.customer, 'customer_name'),
-				"customer_address":  frappe.render_template("xtc/xtc/doctype/xtc_statement_of_accounts/address_list.html",addr_list) if addr_list else '',
-				"customer_payment_terms": frappe.db.get_value('Customer', entry.customer, 'payment_terms'),
-				"currency": presentation_currency,
-				"report_date":doc.to_date,
-				"ageing_based_on":'Due Date',
-				'customer': entry.customer,
-				'include_ageing':doc.include_ageing ,
-				'range1': 30,
-				'range2': 60, 
-				'range3': 90, 
-				'range4': 120,				
-			}
-		)
+		
+		payment_terms=frappe.db.get_value('Customer', entry.customer, 'payment_terms')
+		# print(entry.idx,'entry.customer',entry.customer,'payment_terms',payment_terms)
+		# if (entry.customer and payment_terms!='CoD'):
+		if (entry.customer):
+			filters = frappe._dict(
+				{
+					"to_date": doc.to_date,
+					"company": doc.company,
+					"party_type": "Customer",
+					"party": [entry.customer],
+					"customer_name":frappe.db.get_value('Customer', entry.customer, 'customer_name'),
+					"customer_address":  frappe.render_template("xtc/xtc/doctype/xtc_statement_of_accounts/address_list.html",addr_list) if addr_list else '',
+					"customer_payment_terms": payment_terms,
+					"currency": presentation_currency,
+					"report_date":doc.to_date,
+					"ageing_based_on":'Due Date',
+					'customer': entry.customer,
+					'include_ageing':doc.include_ageing ,
+					'range1': 30,
+					'range2': 60, 
+					'range3': 90, 
+					'range4': 120,				
+				}
+			)
 
-		col, res ,third_arg, chart, fifth_arg,skip_total_row= get_xtc_soa(filters)
+			col, res ,third_arg, chart, fifth_arg,skip_total_row= get_xtc_soa(filters)
 
-		outstanding_total=0
-		total_range_1=0
-		total_range_2=0
-		total_range_3=0
-		total_range_4=0
-		for x in res:
-			if x['voucher_type']=='Sales Invoice':
-				x['po_no']=frappe.db.get_value('Sales Invoice',x['voucher_no'], 'po_no') or ''
-				outstanding_total+=x['outstanding']
-				total_range_1+=x['range1']
-				total_range_2+=x['range2']
-				total_range_3+=x['range3']
-				total_range_4+=x['range4']
-			else:
-				x['po_no']=''
+			outstanding_total=0
+			total_range_1=0
+			total_range_2=0
+			total_range_3=0
+			total_range_4=0
+			for x in res:
+				if x['voucher_type']=='Sales Invoice':
+					x['po_no']=frappe.db.get_value('Sales Invoice',x['voucher_no'], 'po_no') or ''
+					outstanding_total+=x['outstanding']
+					total_range_1+=x['range1']
+					total_range_2+=x['range2']
+					total_range_3+=x['range3']
+					total_range_4+=x['range4']
+				else:
+					x['po_no']=''
 
-		filters['total_range_1']=total_range_1
-		filters['total_range_2']=total_range_2
-		filters['total_range_3']=total_range_3
-		filters['total_range_4']=total_range_4
-		filters['outstanding_total']=outstanding_total
-		if last_customer==entry:
+			filters['total_range_1']=total_range_1
+			filters['total_range_2']=total_range_2
+			filters['total_range_3']=total_range_3
+			filters['total_range_4']=total_range_4
+			filters['outstanding_total']=outstanding_total
 			terms_and_conditions=frappe.db.get_value("Terms and Conditions", doc.terms_and_conditions, "terms")
-		else:
-			terms_and_conditions=None
+			# if last_customer==entry:
+			# 	terms_and_conditions=frappe.db.get_value("Terms and Conditions", doc.terms_and_conditions, "terms")
+			# else:
+			# 	terms_and_conditions=None
 
-		html = frappe.render_template(
-			template_path,
-			{
-				"filters": filters,
-				"data": res,
-				"letter_head": letter_head if doc.letter_head else None,
-				"terms_and_conditions": terms_and_conditions,
-			},
-		)
+			html = frappe.render_template(
+				template_path,
+				{
+					"filters": filters,
+					"data": res,
+					"letter_head": letter_head if doc.letter_head else None,
+					"terms_and_conditions": terms_and_conditions,
+				},
+			)
 
-		html = frappe.render_template(
-			base_template_path,
-			{"body": html, "css": get_print_style(), "title": "Statement For " + entry.customer},
-		)
-		statement_dict[entry.customer] = html
+			html = frappe.render_template(
+				base_template_path,
+				{"body": html, "css": get_print_style(), "title": "Statement For " + entry.customer},
+			)
+			statement_dict[entry.customer] = html
 
 	if not bool(statement_dict):
 		return False

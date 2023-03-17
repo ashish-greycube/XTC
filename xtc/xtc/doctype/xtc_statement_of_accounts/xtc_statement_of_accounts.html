@@ -18,7 +18,7 @@
 	{% set font_size = 12 %}
 	
 	<hr style="height:2.5px;border-width:0;color:#D3D3D3;background-color:#D3D3D3;">	
-    <table style="font-size: {{font_size}}px; border-style: none">
+    <table style="width: 100%;font-size: {{font_size}}px; border-style: none;table-layout:fixed">
         <tbody>
             <tr>
                 <th style="width: 20%"></th>
@@ -28,7 +28,7 @@
             </tr>			
             <tr>
                 <td><b>{{ _("Customer Name: ") }}</b></td>
-                <td colspan="2"><b>{{filters.party[0] }}</b></td>
+                <td colspan="3"><b>{{filters.party[0] }}</b></td>
             </tr>
             <tr>
                 <td style="vertical-align:top"><b>{{ _("Address:") }}</b></td>

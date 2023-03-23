@@ -1,0 +1,130 @@
+{
+ "actions": [],
+ "creation": "2023-03-23 13:11:29.588685",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "payment_date",
+  "filters_section",
+  "company",
+  "supplier_group",
+  "supplier",
+  "fetch_accounts_payable",
+  "column_break_5",
+  "from_due_date",
+  "to_due_date",
+  "max_amount",
+  "min_amount",
+  "supplier_details_section",
+  "payment_details",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "filters_section",
+   "fieldtype": "Section Break",
+   "label": "Filters"
+  },
+  {
+   "fieldname": "supplier_group",
+   "fieldtype": "Link",
+   "label": "Supplier Group",
+   "options": "Supplier Group"
+  },
+  {
+   "fieldname": "from_due_date",
+   "fieldtype": "Date",
+   "label": "From Due Date"
+  },
+  {
+   "fieldname": "to_due_date",
+   "fieldtype": "Date",
+   "label": "To Due Date"
+  },
+  {
+   "description": "Max Outstanding Amount",
+   "fieldname": "max_amount",
+   "fieldtype": "Currency",
+   "label": "Max Amount"
+  },
+  {
+   "description": "Min Outstanding Amount",
+   "fieldname": "min_amount",
+   "fieldtype": "Currency",
+   "label": "Min Amount"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "XTC Automated Payment",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "supplier_details_section",
+   "fieldtype": "Section Break",
+   "label": "Supplier Details"
+  },
+  {
+   "fieldname": "payment_details",
+   "fieldtype": "Table",
+   "label": "Payment Details",
+   "options": "XTC Automated Payment Detail"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "fetch_accounts_payable",
+   "fieldtype": "Button",
+   "label": "Fetch Accounts Payable"
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "payment_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Payment Date",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2023-03-23 20:57:36.957900",
+ "modified_by": "Administrator",
+ "module": "XTC",
+ "name": "XTC Automated Payment",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

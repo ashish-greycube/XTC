@@ -14,7 +14,7 @@ const bank_file_header = [
 
 frappe.ui.form.on("XTC Automated Payment", {
   refresh: function (frm) {
-    frm.page.add_inner_button(__("Make Bank csv"), () => {
+    frm.page.add_menu_item(__("Make Bank csv"), () => {
       return frm
         .call({
           method: "download_bank_csv",

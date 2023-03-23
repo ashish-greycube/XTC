@@ -147,7 +147,16 @@ class XTCAutomatedPayment(Document):
             }
         )
         _file.save(ignore_permissions=True)
-        # send_email
+
+        return
+
+        email_template = frappe.get_doc("Email Template", "Bank Payment Summary")
+        frappe.sendmail(
+            recipients="",
+            subject=email_template.subject,
+            message=frappe.render_template(email_template.response, self),
+            attachments=[out],
+        )
 
     @frappe.whitelist()
     def send_supplier_payment_advice_emails(self):
@@ -185,7 +194,6 @@ class XTCAutomatedPayment(Document):
                 }
             )
             _file.save(ignore_permissions=True)
-            break
 
         return
 

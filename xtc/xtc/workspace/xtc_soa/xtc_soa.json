@@ -23,9 +23,35 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "XTC Automated Payment",
+   "link_to": "XTC Automated Payment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Setings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "XTC Settings",
+   "link_to": "XTC Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2023-02-21 20:06:43.615616",
+ "modified": "2023-03-24 12:11:45.414983",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "XTC SOA",

@@ -41,7 +41,7 @@ frappe.ui.form.on("XTC Automated Payment", {
     frm.page.add_menu_item(__("Email Bank Summary"), () => {
       return frm
         .call({
-          method: "make_bank_summary",
+          method: "send_bank_summary",
           doc: frm.doc,
           args: {},
         })
@@ -60,7 +60,44 @@ frappe.ui.form.on("XTC Automated Payment", {
         freeze_message: __("Fetching Payments", []),
       })
       .then((r) => {
+        frm.trigger("set_supplier_detail");
         frm.refresh();
+      });
+  },
+  set_supplier_detail: function (frm) {
+    let suppliers = [];
+
+    for (const itr of frm.doc.payment_details) {
+      suppliers = frm.doc.suppliers.map((t) => t.supplier);
+      if (!suppliers.includes(itr.supplier)) {
+        let d = frm.add_child("suppliers", {
+          supplier: itr.supplier,
+        });
+        frm.script_manager.trigger("supplier", d.doctype, d.name);
+      }
+    }
+    frm.refresh_field("suppliers");
+  },
+});
+
+frappe.ui.form.on("Request for Quotation Supplier", {
+  supplier: function (frm, cdt, cdn) {
+    var d = locals[cdt][cdn];
+    frappe.db
+      .get_value("Supplier", d.supplier, [
+        "supplier_primary_contact",
+        "email_id",
+      ])
+      .then((r) => {
+        if (r.message) {
+          frappe.model.set_value(
+            cdt,
+            cdn,
+            "contact",
+            r.message.supplier_primary_contact
+          );
+          frappe.model.set_value(cdt, cdn, "email_id", r.message.email_id);
+        }
       });
   },
 });

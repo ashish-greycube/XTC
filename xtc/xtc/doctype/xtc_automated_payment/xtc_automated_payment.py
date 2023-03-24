@@ -5,8 +5,9 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 import pandas as pd
-from frappe.utils import getdate
+from frappe.utils import getdate, cint
 from frappe.contacts.doctype.address.address import get_address_display
+from frappe.core.doctype.communication.email import make
 
 
 class XTCAutomatedPayment(Document):
@@ -136,81 +137,89 @@ class XTCAutomatedPayment(Document):
         return bank_file_header + data
 
     @frappe.whitelist()
-    def make_bank_summary(self):
+    def send_bank_summary(self):
+        """email bank payment summary to session user"""
+        settings = frappe.get_cached_doc("XTC Settings")
+
+        file_name = "Bank Payment Summary_{}_{}".format(self.name, self.payment_date)
         out = frappe.attach_print(
             self.doctype,
             self.name,
-            file_name="Bank Payment Summary_{}_{}.pdf".format(
-                self.name, self.payment_date
-            ),
-            print_format="Bank Payment Summary",
+            file_name=file_name,
+            print_format=settings.bank_payment_summary_format,
         )
 
-        # _file = frappe.get_doc(
-        #     {
-        #         "doctype": "File",
-        #         "file_name": out["fname"],
-        #         "attached_to_doctype": self.doctype,
-        #         "attached_to_name": self.name,
-        #         "is_private": 0,
-        #         "content": out["fcontent"],
-        #     }
-        # )
-        # _file.save(ignore_permissions=True)
+        # attach_file(out, file_name, self.doctype, self.name)
 
-        # return
-
-        email_template = frappe.get_doc("Email Template", "Bank Payment Summary")
+        email_template = frappe.get_doc(
+            "Email Template", settings.bank_payment_summary_email_template
+        )
         frappe.sendmail(
-            recipients=frappe.session.user,
+            recipients=frappe.db.get_value("User", frappe.session.user, "email"),
             subject=email_template.subject,
-            message=frappe.render_template(email_template.response, self),
+            message=frappe.render_template(email_template.response, self.as_dict()),
             attachments=[out],
         )
+        frappe.db.commit()
 
     @frappe.whitelist()
     def send_supplier_payment_advice_emails(self):
-        payment_details = self.payment_details
+        """email bank payment advice to each suppplier in child table"""
+        settings = frappe.get_cached_doc("XTC Settings")
 
-        for supplier in set([d.supplier for d in payment_details]):
+        _payment_details = self.payment_details
+
+        for supplier in self.suppliers:
+            if not cint(supplier.send_email) or cint(supplier.email_sent):
+                continue
+
             self.payment_details = list(
-                filter(lambda x: x.supplier == supplier, payment_details)
+                filter(lambda x: x.supplier == supplier.supplier, _payment_details)
             )
             address = frappe.db.get_value(
-                "Supplier", supplier, "supplier_primary_address"
+                "Supplier", supplier.supplier, "supplier_primary_address"
             )
             self.address_display = self.payment_details[0].supplier_name
             if address:
                 self.address_display = get_address_display(address)
 
+            self.contact = supplier.contact or supplier.supplier
+
+            file_name = "{}_Payment Advice_{}_{}".format(
+                supplier.supplier, self.name, self.payment_date
+            )
             out = frappe.attach_print(
                 self.doctype,
                 self.name,
-                file_name="{}_Payment Advice_{}_{}.pdf".format(
-                    supplier, self.name, self.payment_date
-                ),
-                print_format="Supplier Payment Advice",
+                file_name=file_name,
+                print_format=settings.supplier_payment_advice_format,
                 doc=self,
             )
 
-            _file = frappe.get_doc(
-                {
-                    "doctype": "File",
-                    "file_name": out["fname"],
-                    "attached_to_doctype": self.doctype,
-                    "attached_to_name": self.name,
-                    "is_private": 0,
-                    "content": out["fcontent"],
-                }
+            # attach_file(out, file_name, self.doctype, self.name)
+
+            email_template = frappe.get_doc(
+                "Email Template", settings.supplier_payment_advice_email_template
             )
-            _file.save(ignore_permissions=True)
+            frappe.sendmail(
+                recipients=supplier.email_id,
+                subject=email_template.subject,
+                message=frappe.render_template(email_template.response, self.as_dict()),
+                attachments=[out],
+            )
+            supplier.db_set("email_sent", 1)
+        frappe.db.commit()
 
-        return
 
-        email_template = frappe.get_doc("Email Template", "Supplier Payment Advice")
-        frappe.sendmail(
-            recipients=supplier_email,
-            subject=email_template.subject,
-            message=frappe.render_template(email_template.response, self),
-            attachments=[out],
-        )
+def attach_file(content, file_name, doctype, docname):
+    _file = frappe.get_doc(
+        {
+            "doctype": "File",
+            "file_name": file_name,
+            "attached_to_doctype": doctype,
+            "attached_to_name": docname,
+            "is_private": 0,
+            "content": content,
+        }
+    )
+    _file.save(ignore_permissions=True)

@@ -14,7 +14,7 @@ const bank_file_header = [
 
 frappe.ui.form.on("XTC Automated Payment", {
   refresh: function (frm) {
-    frm.page.add_menu_item(__("Make Bank csv"), () => {
+    frm.page.add_menu_item(__("Download Bank csv"), () => {
       return frm
         .call({
           method: "download_bank_csv",
@@ -26,7 +26,7 @@ frappe.ui.form.on("XTC Automated Payment", {
         });
     });
 
-    frm.page.add_menu_item(__("Send Supplier Payment Advice"), () => {
+    frm.page.add_menu_item(__("Email Supplier Payment Advice"), () => {
       return frm
         .call({
           method: "send_supplier_payment_advice_emails",
@@ -38,7 +38,7 @@ frappe.ui.form.on("XTC Automated Payment", {
         });
     });
 
-    frm.page.add_menu_item(__("Make Bank Summary"), () => {
+    frm.page.add_menu_item(__("Email Bank Summary"), () => {
       return frm
         .call({
           method: "make_bank_summary",

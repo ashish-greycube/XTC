@@ -1,0 +1,61 @@
+{
+ "actions": [],
+ "creation": "2023-03-24 12:08:59.317662",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "bank_payment_summary_format",
+  "bank_payment_summary_email_template",
+  "supplier_payment_advice_format",
+  "supplier_payment_advice_email_template"
+ ],
+ "fields": [
+  {
+   "fieldname": "bank_payment_summary_format",
+   "fieldtype": "Link",
+   "label": "Bank Payment Summary Format",
+   "options": "Print Format"
+  },
+  {
+   "fieldname": "bank_payment_summary_email_template",
+   "fieldtype": "Link",
+   "label": "Bank Payment Summary Email Template",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "supplier_payment_advice_format",
+   "fieldtype": "Link",
+   "label": "Supplier Payment Advice Format",
+   "options": "Print Format"
+  },
+  {
+   "fieldname": "supplier_payment_advice_email_template",
+   "fieldtype": "Link",
+   "label": "Supplier Payment Advice Email Template",
+   "options": "Email Template"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2023-03-24 12:08:59.317662",
+ "modified_by": "Administrator",
+ "module": "XTC",
+ "name": "XTC Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

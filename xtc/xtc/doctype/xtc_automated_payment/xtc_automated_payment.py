@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 import pandas as pd
 from frappe.utils import getdate
@@ -13,6 +14,12 @@ class XTCAutomatedPayment(Document):
         for d in self.payment_details:
             if not d.payment_date:
                 d.payment_date = self.payment_date
+            if d.amount_to_pay > d.outstanding_amount:
+                frappe.throw(
+                    _(
+                        "Paid amount {} cannot be greater than outstanding amount {}."
+                    ).format(d.amount_to_pay, d.outstanding_amount)
+                )
 
     @frappe.whitelist()
     def _get_accounts_payable(self):
@@ -133,26 +140,29 @@ class XTCAutomatedPayment(Document):
         out = frappe.attach_print(
             self.doctype,
             self.name,
-            file_name="Bank Payment Summary_{}_{}".format(self.name, self.payment_date),
+            file_name="Bank Payment Summary_{}_{}.pdf".format(
+                self.name, self.payment_date
+            ),
             print_format="Bank Payment Summary",
         )
-        _file = frappe.get_doc(
-            {
-                "doctype": "File",
-                "file_name": out["fname"],
-                "attached_to_doctype": self.doctype,
-                "attached_to_name": self.name,
-                "is_private": 0,
-                "content": out["fcontent"],
-            }
-        )
-        _file.save(ignore_permissions=True)
 
-        return
+        # _file = frappe.get_doc(
+        #     {
+        #         "doctype": "File",
+        #         "file_name": out["fname"],
+        #         "attached_to_doctype": self.doctype,
+        #         "attached_to_name": self.name,
+        #         "is_private": 0,
+        #         "content": out["fcontent"],
+        #     }
+        # )
+        # _file.save(ignore_permissions=True)
+
+        # return
 
         email_template = frappe.get_doc("Email Template", "Bank Payment Summary")
         frappe.sendmail(
-            recipients="",
+            recipients=frappe.session.user,
             subject=email_template.subject,
             message=frappe.render_template(email_template.response, self),
             attachments=[out],
@@ -176,7 +186,7 @@ class XTCAutomatedPayment(Document):
             out = frappe.attach_print(
                 self.doctype,
                 self.name,
-                file_name="{}_Payment Advice_{}_{}".format(
+                file_name="{}_Payment Advice_{}_{}.pdf".format(
                     supplier, self.name, self.payment_date
                 ),
                 print_format="Supplier Payment Advice",

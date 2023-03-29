@@ -25,43 +25,64 @@ frappe.ui.form.on("XTC Automated Payment", {
     });
   },
 
-  refresh: function (frm) {
-    frm.page.add_menu_item(__("Download Bank csv"), () => {
-      return frm
-        .call({
-          method: "download_bank_csv",
-          doc: frm.doc,
-          args: {},
-        })
-        .then((r) => {
-          frappe.tools.downloadify(r.message, null, `Payment_Summary_for_Bank`);
-        });
-    });
+  add_custom_buttons: function (frm) {
+    frm.add_custom_button(
+      __("Download Bank csv"),
+      () => {
+        return frm
+          .call({
+            method: "download_bank_csv",
+            doc: frm.doc,
+            args: {},
+          })
+          .then((r) => {
+            frappe.tools.downloadify(
+              r.message,
+              null,
+              `Payment_Summary_for_Bank`
+            );
+          });
+      },
+      __("Tools")
+    );
 
-    frm.page.add_menu_item(__("Email Supplier Payment Advice"), () => {
-      return frm
-        .call({
-          method: "send_supplier_payment_advice_emails",
-          doc: frm.doc,
-          args: {},
-        })
-        .then((r) => {
-          frm.reload_doc();
-        });
-    });
+    frm.add_custom_button(
+      __("Email Supplier Payment Advice"),
+      () => {
+        return frm
+          .call({
+            method: "send_supplier_payment_advice_emails",
+            doc: frm.doc,
+            args: {},
+          })
+          .then((r) => {
+            frm.reload_doc();
+          });
+      },
+      __("Tools")
+    );
 
-    frm.page.add_menu_item(__("Email Bank Summary"), () => {
-      return frm
-        .call({
-          method: "send_bank_summary",
-          doc: frm.doc,
-          args: {},
-        })
-        .then((r) => {
-          frm.reload_doc();
-        });
-    });
+    frm.add_custom_button(
+      __("Email Bank Summary"),
+      () => {
+        return frm
+          .call({
+            method: "send_bank_summary",
+            doc: frm.doc,
+            args: {},
+          })
+          .then((r) => {
+            frm.reload_doc();
+          });
+      },
+      __("Tools")
+    );
   },
+
+  refresh: function (frm) {
+    frm.trigger("add_custom_buttons");
+  },
+
   fetch_accounts_payable: function (frm) {
     return frm
       .call({

@@ -34,7 +34,7 @@ class XTCAutomatedPayment(Document):
                 list(
                     filter(
                         lambda x: x.purchase_invoice == d.voucher_no,
-                        self.payment_details,
+                        self.get("payment_details", []),
                     )
                 )
             ):

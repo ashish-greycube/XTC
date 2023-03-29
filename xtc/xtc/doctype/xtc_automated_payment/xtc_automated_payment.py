@@ -30,6 +30,16 @@ class XTCAutomatedPayment(Document):
             frappe.msgprint("No payments found matching selected criteria.")
 
         for _, d in df.iterrows():
+            if len(
+                list(
+                    filter(
+                        lambda x: x.purchase_invoice == d.voucher_no,
+                        self.payment_details,
+                    )
+                )
+            ):
+                continue
+
             self.append(
                 "payment_details",
                 {
@@ -223,3 +233,26 @@ def attach_file(content, file_name, doctype, docname):
         }
     )
     _file.save(ignore_permissions=True)
+
+
+@frappe.whitelist()
+def supplier_query(doctype, txt, searchfield, start, page_len, filters):
+    return frappe.db.sql(
+        """
+        select 
+            ts.name , fn.name 
+        from `tabSupplier` ts
+            inner join (
+                select tsg.name from `tabSupplier Group` tsg
+                inner join `tabSupplier Group` tsg2 on tsg2.name = %(supplier_group)s
+                and tsg.lft >= tsg2.lft and tsg.rgt <= tsg2.rgt
+            ) fn on ts.supplier_group = fn.name and ts.name like %(txt)s
+    limit %(start)s, %(page_len)s 
+            """,
+        {
+            "txt": "%" + txt + "%",
+            "start": start,
+            "page_len": page_len,
+            "supplier_group": filters.get("supplier_group") or "All Supplier Groups",
+        },
+    )

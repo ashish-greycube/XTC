@@ -13,6 +13,18 @@ const bank_file_header = [
 ];
 
 frappe.ui.form.on("XTC Automated Payment", {
+  setup: function (frm) {
+    frm.set_query("supplier", () => {
+      return {
+        query:
+          "xtc.xtc.doctype.xtc_automated_payment.xtc_automated_payment.supplier_query",
+        filters: {
+          supplier_group: frm.doc.supplier_group,
+        },
+      };
+    });
+  },
+
   refresh: function (frm) {
     frm.page.add_menu_item(__("Download Bank csv"), () => {
       return frm
@@ -76,6 +88,16 @@ frappe.ui.form.on("XTC Automated Payment", {
         frm.script_manager.trigger("supplier", d.doctype, d.name);
       }
     }
+    frm.refresh_field("suppliers");
+  },
+});
+
+frappe.ui.form.on("XTC Automated Payment Detail", {
+  payment_details_remove: function (frm) {
+    let suppliers = frm.doc.payment_details.map((r) => r.supplier);
+    frm.doc.suppliers = frm.doc.suppliers.filter((t) =>
+      suppliers.includes(t.supplier)
+    );
     frm.refresh_field("suppliers");
   },
 });

@@ -99,7 +99,6 @@ frappe.ui.form.on("XTC Automated Payment", {
   },
   set_supplier_detail: function (frm) {
     let suppliers = [];
-
     for (const itr of frm.doc.payment_details) {
       suppliers = frm.doc.suppliers.map((t) => t.supplier);
       if (!suppliers.includes(itr.supplier)) {
@@ -110,7 +109,19 @@ frappe.ui.form.on("XTC Automated Payment", {
       }
     }
     frm.refresh_field("suppliers");
+    frm.trigger("set_total")
   },
+
+  set_total: function (frm) {
+
+    let total_amount = 0;
+    for (const itr of frm.doc.payment_details) {
+      total_amount += itr.amount_to_pay;
+    }
+    frm.set_value('total_amount', total_amount);
+
+  }
+
 });
 
 frappe.ui.form.on("XTC Automated Payment Detail", {
@@ -120,6 +131,7 @@ frappe.ui.form.on("XTC Automated Payment Detail", {
       suppliers.includes(t.supplier)
     );
     frm.refresh_field("suppliers");
+    frm.trigger("set_total")
   },
 });
 

@@ -141,7 +141,7 @@ class XTCAutomatedPayment(Document):
                     supplier.second_party_account_id_cf,
                     supplier.second_party_name_cf,
                     d.amount_to_pay,
-                    self.name,
+                    self.name.replace("-",""),
                 ]
             )
         return bank_file_header + data
@@ -183,17 +183,21 @@ class XTCAutomatedPayment(Document):
             if not cint(supplier.send_email) or cint(supplier.email_sent):
                 continue
 
-            self.payment_details = list(
+            ctx = self.as_dict()
+            ctx["contact"] = supplier.contact or supplier.supplier
+            ctx["payment_details"] = list(
                 filter(lambda x: x.supplier == supplier.supplier, _payment_details)
+            )
+
+            ctx["total_amount"] = sum(
+                [d.get("amount_to_pay") for d in self.payment_details]
             )
             address = frappe.db.get_value(
                 "Supplier", supplier.supplier, "supplier_primary_address"
             )
-            self.address_display = self.payment_details[0].supplier_name
+            ctx["address_display"] = ctx["payment_details"][0].supplier_name
             if address:
-                self.address_display = get_address_display(address)
-
-            self.contact = supplier.contact or supplier.supplier
+                ctx["address_display"] = get_address_display(address)
 
             file_name = "{}_Payment Advice_{}_{}".format(
                 supplier.supplier, self.name, self.payment_date
@@ -203,7 +207,7 @@ class XTCAutomatedPayment(Document):
                 self.name,
                 file_name=file_name,
                 print_format=settings.supplier_payment_advice_format,
-                doc=self,
+                doc=ctx,
             )
 
             # attach_file(out, file_name, self.doctype, self.name)
@@ -211,10 +215,11 @@ class XTCAutomatedPayment(Document):
             email_template = frappe.get_doc(
                 "Email Template", settings.supplier_payment_advice_email_template
             )
+
             frappe.sendmail(
                 recipients=supplier.email_id,
-                subject=email_template.subject,
-                message=frappe.render_template(email_template.response, self.as_dict()),
+                subject=frappe.render_template(email_template.subject, ctx),
+                message=frappe.render_template(email_template.response, ctx),
                 attachments=[out],
             )
             supplier.db_set("email_sent", 1)

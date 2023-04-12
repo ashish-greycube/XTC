@@ -19,6 +19,7 @@
   "min_amount",
   "supplier_details_section",
   "payment_details",
+  "total_amount",
   "suppliers",
   "amended_from"
  ],
@@ -110,12 +111,17 @@
    "fieldtype": "Table",
    "label": "Suppliers",
    "options": "Request for Quotation Supplier"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-29 09:50:50.097007",
+ "modified": "2023-04-12 08:28:10.281111",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "XTC Automated Payment",

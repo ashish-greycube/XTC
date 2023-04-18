@@ -95,13 +95,11 @@ after_install = "xtc.install.after_install"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Email Queue": {
+		"validate": "xtc.override_email.validate",
+	}
+}
 
 # Scheduled Tasks
 # ---------------
@@ -176,3 +174,5 @@ user_data_fields = [
 # auth_hooks = [
 # 	"xtc.auth.validate"
 # ]
+
+# override_email_send = "xtc.override_email_send"

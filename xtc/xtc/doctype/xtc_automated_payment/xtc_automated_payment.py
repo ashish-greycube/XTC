@@ -171,6 +171,7 @@ class XTCAutomatedPayment(Document):
             attachments=[out],
         )
         frappe.db.commit()
+        frappe.msgprint(_("Bank Summary email has been queued."))
 
     @frappe.whitelist()
     def send_supplier_payment_advice_emails(self):
@@ -224,6 +225,7 @@ class XTCAutomatedPayment(Document):
             )
             supplier.db_set("email_sent", 1)
         frappe.db.commit()
+        frappe.msgprint(_("Supplier Payment Advice emails have been queued."))
 
 
 def attach_file(content, file_name, doctype, docname):

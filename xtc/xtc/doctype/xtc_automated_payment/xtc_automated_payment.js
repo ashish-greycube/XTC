@@ -34,6 +34,7 @@ frappe.ui.form.on("XTC Automated Payment", {
             method: "download_bank_csv",
             doc: frm.doc,
             args: {},
+            freeze: true
           })
           .then((r) => {
             frappe.tools.downloadify(
@@ -54,6 +55,7 @@ frappe.ui.form.on("XTC Automated Payment", {
             method: "send_supplier_payment_advice_emails",
             doc: frm.doc,
             args: {},
+            freeze: true
           })
           .then((r) => {
             frm.reload_doc();
@@ -70,6 +72,7 @@ frappe.ui.form.on("XTC Automated Payment", {
             method: "send_bank_summary",
             doc: frm.doc,
             args: {},
+            freeze: true
           })
           .then((r) => {
             frm.reload_doc();

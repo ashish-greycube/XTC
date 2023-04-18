@@ -5,7 +5,7 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 import pandas as pd
-from frappe.utils import getdate, cint
+from frappe.utils import getdate, cint, flt
 from frappe.contacts.doctype.address.address import get_address_display
 from frappe.core.doctype.communication.email import make
 
@@ -17,10 +17,32 @@ class XTCAutomatedPayment(Document):
                 d.payment_date = self.payment_date
             if d.amount_to_pay > d.outstanding_amount:
                 frappe.throw(
-                    _(
-                        "Paid amount {} cannot be greater than outstanding amount {}."
-                    ).format(d.amount_to_pay, d.outstanding_amount)
-                )
+                    _("Paid amount {} cannot be greater than outstanding amount {}.").format(
+                        d.amount_to_pay, d.outstanding_amount))
+        self.total_amount = sum([flt(d.amount_to_pay)
+                                for d in self.payment_details])
+
+    def on_submit(self):
+        supplier_details = frappe.db.sql_list("""
+        select supplier_name
+                from tabSupplier ts
+        where name in ({})
+            and (second_party_account_type_cf is null or
+            second_party_bank_code_cf is null or
+            second_party_account_id_cf is null or
+            second_party_name_cf is null)
+        """.format(",".join(frappe.db.escape(d.supplier) for d in self.suppliers))
+        )
+
+        if supplier_details:
+            frappe.throw(
+                _("Please complete Bank details for suppliers: %s" % ", ".join(supplier_details)))
+
+        supplier_emails = [
+            d.supplier_name for d in self.suppliers if not d.get("email_id")]
+        if supplier_emails:
+            frappe.throw(_("Please set email id for suppliers: %s" %
+                         ", ".join(supplier_emails)))
 
     @frappe.whitelist()
     def _get_accounts_payable(self):
@@ -58,8 +80,7 @@ class XTCAutomatedPayment(Document):
 
     def get_invoices(self):
         from erpnext.accounts.report.accounts_receivable.accounts_receivable import (
-            ReceivablePayableReport,
-        )
+            ReceivablePayableReport, )
 
         args = {
             "party_type": "Supplier",
@@ -141,7 +162,7 @@ class XTCAutomatedPayment(Document):
                     supplier.second_party_account_id_cf,
                     supplier.second_party_name_cf,
                     d.amount_to_pay,
-                    self.name.replace("-",""),
+                    self.name
                 ]
             )
         return bank_file_header + data
@@ -151,7 +172,8 @@ class XTCAutomatedPayment(Document):
         """email bank payment summary to session user"""
         settings = frappe.get_cached_doc("XTC Settings")
 
-        file_name = "Bank Payment Summary_{}_{}".format(self.name, self.payment_date)
+        file_name = "Bank Payment Summary_{}_{}".format(
+            self.name, self.payment_date)
         out = frappe.attach_print(
             self.doctype,
             self.name,
@@ -165,9 +187,14 @@ class XTCAutomatedPayment(Document):
             "Email Template", settings.bank_payment_summary_email_template
         )
         frappe.sendmail(
-            recipients=frappe.db.get_value("User", frappe.session.user, "email"),
+            recipients=frappe.db.get_value(
+                "User",
+                frappe.session.user,
+                "email"),
             subject=email_template.subject,
-            message=frappe.render_template(email_template.response, self.as_dict()),
+            message=frappe.render_template(
+                email_template.response,
+                self.as_dict()),
             attachments=[out],
         )
         frappe.db.commit()
@@ -184,43 +211,53 @@ class XTCAutomatedPayment(Document):
             if not cint(supplier.send_email) or cint(supplier.email_sent):
                 continue
 
-            ctx = self.as_dict()
-            ctx["contact"] = supplier.contact or supplier.supplier
-            ctx["payment_details"] = list(
-                filter(lambda x: x.supplier == supplier.supplier, _payment_details)
-            )
-
-            ctx["total_amount"] = sum(
-                [d.get("amount_to_pay") for d in self.payment_details]
-            )
+            payment_details = list(
+                filter(
+                    lambda x: x.supplier == supplier.supplier,
+                    _payment_details))
             address = frappe.db.get_value(
                 "Supplier", supplier.supplier, "supplier_primary_address"
             )
-            ctx["address_display"] = ctx["payment_details"][0].supplier_name
-            if address:
-                ctx["address_display"] = get_address_display(address)
+
+            supplier_details = {
+                "contact": supplier.contact or supplier.supplier,
+                "payment_details": payment_details,
+                "total_amount": sum(
+                    [d.get("amount_to_pay") for d in payment_details]
+                ),
+                "address_display": get_address_display(address)
+            }
+
+            self.supplier_details = supplier_details
 
             file_name = "{}_Payment Advice_{}_{}".format(
                 supplier.supplier, self.name, self.payment_date
             )
+
             out = frappe.attach_print(
                 self.doctype,
                 self.name,
                 file_name=file_name,
                 print_format=settings.supplier_payment_advice_format,
-                doc=ctx,
+                doc=self,
             )
-
+            # with open(f"{self.name}_test.pdf", "wb") as f:
+            #     f.write(out["fcontent"])
             # attach_file(out, file_name, self.doctype, self.name)
 
             email_template = frappe.get_doc(
-                "Email Template", settings.supplier_payment_advice_email_template
-            )
+                "Email Template", settings.supplier_payment_advice_email_template)
+
+            context = {
+                "doc": self.as_dict(),
+                "supplier_details": supplier_details}
 
             frappe.sendmail(
                 recipients=supplier.email_id,
-                subject=frappe.render_template(email_template.subject, ctx),
-                message=frappe.render_template(email_template.response, ctx),
+                subject=frappe.render_template(
+                    email_template.subject, context=context),
+                message=frappe.render_template(
+                    email_template.response, context=context),
                 attachments=[out],
             )
             supplier.db_set("email_sent", 1)
@@ -246,15 +283,15 @@ def attach_file(content, file_name, doctype, docname):
 def supplier_query(doctype, txt, searchfield, start, page_len, filters):
     return frappe.db.sql(
         """
-        select 
-            ts.name , fn.name 
+        select
+            ts.name , fn.name
         from `tabSupplier` ts
             inner join (
                 select tsg.name from `tabSupplier Group` tsg
                 inner join `tabSupplier Group` tsg2 on tsg2.name = %(supplier_group)s
                 and tsg.lft >= tsg2.lft and tsg.rgt <= tsg2.rgt
             ) fn on ts.supplier_group = fn.name and ts.name like %(txt)s
-    limit %(start)s, %(page_len)s 
+    limit %(start)s, %(page_len)s
             """,
         {
             "txt": "%" + txt + "%",

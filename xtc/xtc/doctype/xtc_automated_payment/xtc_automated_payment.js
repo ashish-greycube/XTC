@@ -80,7 +80,8 @@ frappe.ui.form.on("XTC Automated Payment", {
   },
 
   refresh: function (frm) {
-    frm.trigger("add_custom_buttons");
+    if (frm.doc.docstatus == 1)
+      frm.trigger("add_custom_buttons");
   },
 
   fetch_accounts_payable: function (frm) {
@@ -113,13 +114,11 @@ frappe.ui.form.on("XTC Automated Payment", {
   },
 
   set_total: function (frm) {
-
     let total_amount = 0;
     for (const itr of frm.doc.payment_details) {
       total_amount += itr.amount_to_pay;
     }
     frm.set_value('total_amount', total_amount);
-
   }
 
 });

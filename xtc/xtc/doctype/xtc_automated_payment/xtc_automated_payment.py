@@ -187,7 +187,7 @@ class XTCAutomatedPayment(Document):
             "Email Template", settings.bank_payment_summary_email_template
         )
         frappe.sendmail(
-            recipients=frappe.db.get_value(
+            recipients=settings.email_address_email_bank_summary or frappe.db.get_value(
                 "User",
                 frappe.session.user,
                 "email"),
@@ -219,15 +219,12 @@ class XTCAutomatedPayment(Document):
                 "Supplier", supplier.supplier, "supplier_primary_address"
             )
 
-            supplier_details = {
-                "contact": supplier.contact or supplier.supplier,
-                "payment_details": payment_details,
-                "total_amount": sum(
-                    [d.get("amount_to_pay") for d in payment_details]
-                ),
-                "address_display": get_address_display(address)
-            }
-
+            supplier_details = supplier.as_dict()
+            supplier_details["payment_details"] = payment_details
+            supplier_details["total_amount"] = sum(
+                [d.get("amount_to_pay") for d in payment_details]
+            )
+            supplier_details["address_display"] = get_address_display(address)
             self.supplier_details = supplier_details
 
             file_name = "{}_Payment Advice_{}_{}".format(

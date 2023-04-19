@@ -20,7 +20,9 @@
   "supplier_details_section",
   "payment_details",
   "sb_total",
+  "hidden_field",
   "sb_ot_cb_1",
+  "sb_ot_cb_2",
   "total_amount",
   "sb_supplier",
   "suppliers",
@@ -133,12 +135,22 @@
   {
    "fieldname": "sb_supplier",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "hidden_field",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Hidden Field"
+  },
+  {
+   "fieldname": "sb_ot_cb_2",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-17 11:58:11.144881",
+ "modified": "2023-04-19 18:43:12.085264",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "XTC Automated Payment",

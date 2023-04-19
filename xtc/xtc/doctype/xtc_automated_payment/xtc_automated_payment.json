@@ -1,11 +1,12 @@
 {
  "actions": [],
- "autoname": "XTCPAY.####",
+ "autoname": "naming_series:",
  "creation": "2023-03-23 13:11:29.588685",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "naming_series",
   "payment_date",
   "filters_section",
   "company",
@@ -145,12 +146,20 @@
   {
    "fieldname": "sb_ot_cb_2",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "XTCPAY.####",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "XTCPAY.####",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-19 18:43:12.085264",
+ "modified": "2023-04-19 21:38:11.645795",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "XTC Automated Payment",

@@ -9,7 +9,8 @@ def after_install():
             dict(
                 fieldname="supplier_party_account_type_cf",
                 label="Supplier Party Account Type",
-                fieldtype="Data",
+                fieldtype="Select",
+                options="\nA\nF\nE\nM",
                 insert_after="is_internal_supplier",
                 description="A - Account Number, F - FPS ID, E - Email Address, M - Mobile Number"),
             dict(

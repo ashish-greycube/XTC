@@ -34,7 +34,7 @@ frappe.ui.form.on("XTC Automated Payment", {
             method: "download_bank_csv",
             doc: frm.doc,
             args: {},
-            freeze: true
+            freeze: true,
           })
           .then((r) => {
             frappe.tools.downloadify(
@@ -55,7 +55,7 @@ frappe.ui.form.on("XTC Automated Payment", {
             method: "send_supplier_payment_advice_emails",
             doc: frm.doc,
             args: {},
-            freeze: true
+            freeze: true,
           })
           .then((r) => {
             frm.reload_doc();
@@ -72,7 +72,7 @@ frappe.ui.form.on("XTC Automated Payment", {
             method: "send_bank_summary",
             doc: frm.doc,
             args: {},
-            freeze: true
+            freeze: true,
           })
           .then((r) => {
             frm.reload_doc();
@@ -83,8 +83,13 @@ frappe.ui.form.on("XTC Automated Payment", {
   },
 
   refresh: function (frm) {
-    if (frm.doc.docstatus == 1)
-      frm.trigger("add_custom_buttons");
+    if (frm.doc.docstatus == 1) frm.trigger("add_custom_buttons");
+
+    frm.fields_dict.suppliers.grid.update_docfield_property(
+      "email_sent",
+      "read_only",
+      0
+    );
   },
 
   fetch_accounts_payable: function (frm) {
@@ -113,7 +118,7 @@ frappe.ui.form.on("XTC Automated Payment", {
       }
     }
     frm.refresh_field("suppliers");
-    frm.trigger("set_total")
+    frm.trigger("set_total");
   },
 
   set_total: function (frm) {
@@ -121,9 +126,8 @@ frappe.ui.form.on("XTC Automated Payment", {
     for (const itr of frm.doc.payment_details) {
       total_amount += itr.amount_to_pay;
     }
-    frm.set_value('total_amount', total_amount);
-  }
-
+    frm.set_value("total_amount", total_amount);
+  },
 });
 
 frappe.ui.form.on("XTC Automated Payment Detail", {
@@ -133,7 +137,7 @@ frappe.ui.form.on("XTC Automated Payment Detail", {
       suppliers.includes(t.supplier)
     );
     frm.refresh_field("suppliers");
-    frm.trigger("set_total")
+    frm.trigger("set_total");
   },
 });
 

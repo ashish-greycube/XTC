@@ -186,17 +186,17 @@ class XTCAutomatedPayment(Document):
         email_template = frappe.get_doc(
             "Email Template", settings.bank_payment_summary_email_template
         )
-        frappe.sendmail(
-            recipients=settings.email_address_email_bank_summary or frappe.db.get_value(
-                "User",
-                frappe.session.user,
-                "email"),
-            subject=email_template.subject,
-            message=frappe.render_template(
-                email_template.response,
-                self.as_dict()),
-            attachments=[out],
-        )
+        args = {}
+        args['recipients'] = settings.email_address_email_bank_summary or frappe.db.get_value(
+            "User", frappe.session.user, "email")
+        args["subject"] = frappe.render_template(
+            email_template.subject, {"doc": self.as_dict()})
+        args["message"] = frappe.render_template(
+            email_template.response,
+            {"doc": self.as_dict()})
+        args["attachments"] = [out]
+        frappe.sendmail(**args)
+
         frappe.db.commit()
         frappe.msgprint(_("Bank Summary email has been queued."))
 

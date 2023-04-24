@@ -5,9 +5,11 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "xtc_automated_payment",
   "bank_payment_summary_format",
-  "bank_payment_summary_email_template",
   "supplier_payment_advice_format",
+  "cb_1_column",
+  "bank_payment_summary_email_template",
   "supplier_payment_advice_email_template",
   "email_address_email_bank_summary"
  ],
@@ -15,38 +17,56 @@
   {
    "fieldname": "bank_payment_summary_format",
    "fieldtype": "Link",
-   "label": "Bank Payment Summary Format",
-   "options": "Print Format"
+   "in_list_view": 1,
+   "label": "Bank Payment Summary Print Format",
+   "options": "Print Format",
+   "reqd": 1
   },
   {
    "fieldname": "bank_payment_summary_email_template",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Bank Payment Summary Email Template",
-   "options": "Email Template"
+   "options": "Email Template",
+   "reqd": 1
   },
   {
    "fieldname": "supplier_payment_advice_format",
    "fieldtype": "Link",
-   "label": "Supplier Payment Advice Format",
-   "options": "Print Format"
+   "in_list_view": 1,
+   "label": "Supplier Payment Advice Print  Format",
+   "options": "Print Format",
+   "reqd": 1
   },
   {
    "fieldname": "supplier_payment_advice_email_template",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Supplier Payment Advice Email Template",
-   "options": "Email Template"
+   "options": "Email Template",
+   "reqd": 1
   },
   {
    "fieldname": "email_address_email_bank_summary",
    "fieldtype": "Data",
-   "label": "Email Address-Email Bank summary ",
-   "options": "Email"
+   "label": "Email Address for Email Bank summary ",
+   "options": "Email",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_1_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "xtc_automated_payment",
+   "fieldtype": "Section Break",
+   "label": "XTC Automated Payment"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-04-19 15:11:15.358101",
+ "modified": "2023-04-24 18:51:56.260373",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "XTC Settings",

@@ -31,7 +31,7 @@ app_license = "MIT"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"Supplier": "public/js/supplier.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -57,7 +57,7 @@ app_license = "MIT"
 # ------------
 
 # before_install = "xtc.install.before_install"
-after_install = "xtc.install.after_install"
+after_migrate = "xtc.install.after_install"
 
 # Uninstallation
 # ------------
@@ -96,9 +96,9 @@ after_install = "xtc.install.after_install"
 # Hook on document methods and events
 
 doc_events = {
-	"Email Queue": {
-		"validate": "xtc.override_email.validate",
-	}
+    "Email Queue": {
+        "validate": "xtc.override_email.validate",
+    }
 }
 
 # Scheduled Tasks

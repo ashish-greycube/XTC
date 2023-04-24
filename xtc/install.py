@@ -7,30 +7,29 @@ def after_install():
     custom_fields = {
         "Supplier": [
             dict(
-                fieldname="second_party_account_type_cf",
-                label="Second Party Account Type",
+                fieldname="supplier_party_account_type_cf",
+                label="Supplier Party Account Type",
                 fieldtype="Data",
                 insert_after="is_internal_supplier",
+                description="A - Account Number, F - FPS ID, E - Email Address, M - Mobile Number"),
+            dict(
+                fieldname="supplier_party_bank_code_cf",
+                label="Supplier Party Bank Code",
+                fieldtype="Data",
+                insert_after="supplier_party_account_type_cf",
             ),
             dict(
-                fieldname="second_party_bank_code_cf",
-                label="Second Party Bank Code",
+                fieldname="supplier_party_account_id_cf",
+                label="Supplier Party Account ID",
                 fieldtype="Data",
-                insert_after="second_party_account_type_cf",
+                insert_after="supplier_party_bank_code_cf",
             ),
             dict(
-                fieldname="second_party_account_id_cf",
-                label="Second Party Account ID",
+                fieldname="supplier_party_name_cf",
+                label="Supplier Party Name",
                 fieldtype="Data",
-                insert_after="second_party_bank_code_cf",
+                insert_after="supplier_party_account_id_cf",
             ),
-            dict(
-                fieldname="second_party_name_cf",
-                label="Second Party Name",
-                fieldtype="Data",
-                insert_after="second_party_account_id_cf",
-            ),
-        ]
-    }
+        ]}
 
     create_custom_fields(custom_fields, update=True)

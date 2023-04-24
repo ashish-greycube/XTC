@@ -27,10 +27,10 @@ class XTCAutomatedPayment(Document):
         select supplier_name
                 from tabSupplier ts
         where name in ({})
-            and (second_party_account_type_cf is null or
-            second_party_bank_code_cf is null or
-            second_party_account_id_cf is null or
-            second_party_name_cf is null)
+            and (supplier_party_account_type_cf is null or
+            supplier_party_bank_code_cf is null or
+            supplier_party_account_id_cf is null or
+            supplier_party_name_cf is null)
         """.format(",".join(frappe.db.escape(d.supplier) for d in self.suppliers))
         )
 
@@ -143,10 +143,10 @@ class XTCAutomatedPayment(Document):
             filters={"name": ("in", list(suppliers))},
             fields=[
                 "name",
-                "second_party_account_type_cf",
-                "second_party_bank_code_cf",
-                "second_party_account_id_cf",
-                "second_party_name_cf",
+                "supplier_party_account_type_cf",
+                "supplier_party_bank_code_cf",
+                "supplier_party_account_id_cf",
+                "supplier_party_name_cf",
             ],
         )
 
@@ -157,10 +157,10 @@ class XTCAutomatedPayment(Document):
             supplier = supplier_details.get(d.supplier)
             data.append(
                 [
-                    supplier.second_party_account_type_cf,
-                    supplier.second_party_bank_code_cf,
-                    supplier.second_party_account_id_cf,
-                    supplier.second_party_name_cf,
+                    supplier.supplier_party_account_type_cf,
+                    supplier.supplier_party_bank_code_cf,
+                    supplier.supplier_party_account_id_cf,
+                    supplier.supplier_party_name_cf,
                     d.amount_to_pay,
                     self.name
                 ]

@@ -15,7 +15,8 @@ def after_install():
             dict(
                 fieldname="supplier_party_bank_code_cf",
                 label="Supplier Party Bank Code",
-                fieldtype="Data",
+                fieldtype="Link",
+                options="Supplier Party Bank Code",
                 insert_after="supplier_party_account_type_cf",
             ),
             dict(

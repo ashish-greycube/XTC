@@ -31,7 +31,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-22 12:39:16.769720",
+ "modified": "2023-04-24 16:06:54.939961",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "Supplier Party Bank Code",
@@ -98,6 +98,8 @@
    "share": 1
   }
  ],
+ "search_fields": "bank_name",
  "sort_field": "modified",
- "sort_order": "DESC"
+ "sort_order": "DESC",
+ "title_field": "bank_name"
 }

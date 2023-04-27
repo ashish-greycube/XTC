@@ -98,7 +98,6 @@ after_migrate = "xtc.install.after_install"
 
 doc_events = {
     "Email Queue": {"validate": "xtc.override_email.validate"},
-    # "Sales Invoice": {"after_insert": ""},
     "Payment Entry": {
         "before_cancel": "xtc.xtc.doctype.xtc_automated_payment.xtc_automated_payment.before_cancel_payment_entry"
     },

@@ -80,6 +80,23 @@ frappe.ui.form.on("XTC Automated Payment", {
       },
       __("Tools")
     );
+
+    frm.add_custom_button(
+      __("Make Payment Entry"),
+      () => {
+        return frm
+          .call({
+            method: "make_payment_entry",
+            doc: frm.doc,
+            args: {},
+            freeze: true,
+          })
+          .then((r) => {
+            frm.reload_doc();
+          });
+      },
+      __("Tools")
+    );
   },
 
   refresh: function (frm) {
@@ -90,6 +107,21 @@ frappe.ui.form.on("XTC Automated Payment", {
       "read_only",
       0
     );
+  },
+
+  mode_of_payment: function (frm) {
+    if (frm.doc.mode_of_payment) {
+      frappe.call({
+        method:
+          "xtc.xtc.doctype.xtc_automated_payment.xtc_automated_payment.get_default_bank_account",
+        args: { mode_of_payment: frm.doc.mode_of_payment },
+        callback: function (r) {
+          if (!r.exc) {
+            frm.set_value("paid_from", r.message);
+          }
+        },
+      });
+    }
   },
 
   fetch_accounts_payable: function (frm) {
@@ -106,6 +138,7 @@ frappe.ui.form.on("XTC Automated Payment", {
         frm.refresh();
       });
   },
+
   set_supplier_detail: function (frm) {
     let suppliers = [];
     for (const itr of frm.doc.payment_details) {

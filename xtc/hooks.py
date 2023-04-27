@@ -59,6 +59,7 @@ doctype_js = {"Supplier": "public/js/supplier.js"}
 # before_install = "xtc.install.before_install"
 after_migrate = "xtc.install.after_install"
 
+
 # Uninstallation
 # ------------
 
@@ -96,9 +97,11 @@ after_migrate = "xtc.install.after_install"
 # Hook on document methods and events
 
 doc_events = {
-    "Email Queue": {
-        "validate": "xtc.override_email.validate",
-    }
+    "Email Queue": {"validate": "xtc.override_email.validate"},
+    # "Sales Invoice": {"after_insert": ""},
+    "Payment Entry": {
+        "before_cancel": "xtc.xtc.doctype.xtc_automated_payment.xtc_automated_payment.before_cancel_payment_entry"
+    },
 }
 
 # Scheduled Tasks
@@ -130,9 +133,10 @@ doc_events = {
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "xtc.event.get_events"
-# }
+override_whitelisted_methods = {
+    "erpnext.selling.doctype.sales_order.sales_order.make_sales_invoice": "xtc.xtc.doc_events.make_sales_invoice_from_sales_order",
+    "erpnext.stock.doctype.delivery_note.delivery_note.make_sales_invoice": "xtc.xtc.doc_events.make_sales_invoice_from_delivery_note",
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,

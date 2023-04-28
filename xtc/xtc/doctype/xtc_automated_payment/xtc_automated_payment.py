@@ -193,6 +193,7 @@ class XTCAutomatedPayment(Document):
         self.set_payment_entry_status()
 
     def set_payment_entry_status(self):
+        self.load_from_db()
         pending = [d for d in self.payment_details if not d.payment_entry]
         if len(pending) == len(self.payment_details):
             self.db_set("payment_entry_status", "Pending")

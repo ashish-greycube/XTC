@@ -92,7 +92,10 @@ frappe.ui.form.on("XTC Automated Payment", {
             freeze: true,
           })
           .then((r) => {
-            frm.reload_doc();
+            frappe.timeout(0.5).then(() => {
+              frm.reload_doc();
+              frappe.msgprint(__("Payment Entries have been created."));
+            });
           });
       },
       __("Tools")

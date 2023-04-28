@@ -11,6 +11,7 @@ def make_sales_invoice_from_sales_order(
     doclist.posting_date = frappe.db.get_value(
         "Sales Order", source_name, "delivery_date"
     )
+    doclist.set_posting_time = 1
 
     return doclist
 

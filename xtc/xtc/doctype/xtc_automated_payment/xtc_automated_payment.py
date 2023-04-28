@@ -393,6 +393,13 @@ def get_default_bank_account(mode_of_payment):
 
 
 def before_cancel_payment_entry(doc, method):
+    auto_payment = frappe.db.sql(
+        """
+        select parent from `tabXTC Automated Payment Detail` 
+        where payment_entry = %s
+    """,
+        (doc.name),
+    )
     frappe.db.sql(
         """
         update `tabXTC Automated Payment Detail`
@@ -401,3 +408,5 @@ def before_cancel_payment_entry(doc, method):
     """,
         (doc.name),
     )
+    for d in auto_payment:
+        frappe.get_doc("XTC Automated Payment", d[0]).set_payment_entry_status()

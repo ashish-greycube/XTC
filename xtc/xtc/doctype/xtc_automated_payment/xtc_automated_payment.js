@@ -40,7 +40,7 @@ frappe.ui.form.on("XTC Automated Payment", {
             frappe.tools.downloadify(
               r.message,
               null,
-              `Payment_Summary_for_Bank`
+              `BankPaymentSummary-${frm.doc.name}`
             );
           });
       },

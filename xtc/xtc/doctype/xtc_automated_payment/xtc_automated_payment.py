@@ -12,6 +12,7 @@ from erpnext import get_default_company
 from erpnext.accounts.doctype.payment_entry.payment_entry import (
     get_payment_entry,
 )
+import re
 
 
 class XTCAutomatedPayment(Document):
@@ -27,28 +28,49 @@ class XTCAutomatedPayment(Document):
                 )
         self.total_amount = sum([flt(d.amount_to_pay) for d in self.payment_details])
 
-    def on_submit(self):
-        supplier_details = frappe.db.sql_list(
-            """
-        select supplier_name
-                from tabSupplier ts
-        where name in ({})
-            and (supplier_party_account_type_cf is null or
-            supplier_party_bank_code_cf is null or
-            supplier_party_account_id_cf is null or
-            supplier_party_name_cf is null)
-        """.format(
-                ",".join(frappe.db.escape(d.supplier) for d in self.suppliers)
-            )
-        )
+    def validate_suppliers(self):
+        for d in frappe.get_all(
+            "Supplier",
+            filters={"name": ("in", [d.supplier for d in self.suppliers])},
+            fields=[
+                "name",
+                "supplier_name",
+                "supplier_party_account_type_cf",
+                "supplier_party_bank_code_cf",
+                "supplier_party_account_id_cf",
+                "supplier_party_name_cf",
+            ],
+        ):
+            invalid = []
+            if d.supplier_party_account_type_cf == "A":
+                if (
+                    not d.supplier_party_bank_code_cf
+                    or not d.supplier_party_bank_code_cf.isnumeric()
+                ):
+                    invalid.append(
+                        "Bank Code: %s" % (d.supplier_party_bank_code_cf or "")
+                    )
+            elif d.supplier_party_account_type_cf == "E":
+                if not frappe.utils.validate_email_address(
+                    d.supplier_party_account_id_cf
+                ):
+                    invalid.append("Email: %s" % d.supplier_party_account_id_cf)
+            elif d.supplier_party_account_type_cf == "M":
+                if not re.match("^\+852\d{8}$", d.supplier_party_account_id_cf or ""):
+                    invalid.append(
+                        "Mobile: %s" % (d.supplier_party_account_id_cf or "")
+                    )
+            if not d.supplier_party_name_cf:
+                invalid.append("Party name is blank")
 
-        if supplier_details:
-            frappe.throw(
-                _(
-                    "Please complete Bank details for suppliers: %s"
-                    % ", ".join(supplier_details)
+            if invalid:
+                msg = "Invalid supplier details for {0}:<br>{1}".format(
+                    d.supplier_name, ", ".join(invalid)
                 )
-            )
+                frappe.throw(msg)
+
+    def on_submit(self):
+        self.validate_suppliers()
 
         supplier_emails = [
             d.supplier_name for d in self.suppliers if not d.get("email_id")
@@ -204,44 +226,42 @@ class XTCAutomatedPayment(Document):
 
     @frappe.whitelist()
     def download_bank_csv(self):
-        bank_file_header = [
-            [
+        bank_file_header = (
+            (
                 "Second Party Account Type",
                 "Second Party Bank Code",
                 "Second Party Account ID",
                 "Second Party Name",
                 "Amount",
                 "Particular ID",
-            ]
-        ]
-        suppliers = set([d.supplier for d in self.payment_details])
-        supplier_details = frappe.get_all(
-            "Supplier",
-            filters={"name": ("in", list(suppliers))},
-            fields=[
-                "name",
-                "supplier_party_account_type_cf",
-                "supplier_party_bank_code_cf",
-                "supplier_party_account_id_cf",
-                "supplier_party_name_cf",
-            ],
+            ),
         )
+        data = frappe.db.sql(
+            """
+                select 
+                    ts.supplier_party_account_type_cf,
+                    ts.supplier_party_bank_code_cf,
+                    ts.supplier_party_account_id_cf,
+                    ts.supplier_party_name_cf, 
+                    tpe.paid_amount,
+                    tpe.name
+                from `tabPayment Entry` tpe 
+                inner join (
+                    select 
+                        txapd.supplier , txapd.payment_entry 
+                    from `tabXTC Automated Payment` txap 
+                    inner join `tabXTC Automated Payment Detail` txapd on txapd.parent = txap.name
+                        and txapd.payment_entry is not null
+                    where txap.name = %s
+                    group by supplier , payment_entry 
+                ) t on t.payment_entry = tpe.name 
+                inner join tabSupplier ts on ts.name = tpe.party
+        """,
+            (self.name),
+        )
+        if not data:
+            frappe.throw(_("No payment records exist."))
 
-        supplier_details = {d.name: d for d in supplier_details}
-
-        data = []
-        for d in self.payment_details:
-            supplier = supplier_details.get(d.supplier)
-            data.append(
-                [
-                    supplier.supplier_party_account_type_cf,
-                    supplier.supplier_party_bank_code_cf,
-                    supplier.supplier_party_account_id_cf,
-                    supplier.supplier_party_name_cf,
-                    d.amount_to_pay,
-                    self.name,
-                ]
-            )
         return bank_file_header + data
 
     @frappe.whitelist()

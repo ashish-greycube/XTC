@@ -8,10 +8,10 @@
  "field_order": [
   "naming_series",
   "payment_date",
-  "mode_of_payment",
-  "sb_ot_cb_0",
-  "paid_from",
   "payment_entry_status",
+  "sb_ot_cb_0",
+  "mode_of_payment",
+  "paid_from",
   "filters_section",
   "company",
   "supplier_group",
@@ -179,6 +179,7 @@
    "fieldtype": "Select",
    "label": "Payment Entry Status",
    "options": "Completed\nPending\nPartially Completed",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -189,7 +190,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-28 13:55:47.384828",
+ "modified": "2023-04-29 11:56:43.203624",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "XTC Automated Payment",

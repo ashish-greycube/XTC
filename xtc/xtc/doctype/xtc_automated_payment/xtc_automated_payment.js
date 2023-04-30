@@ -23,9 +23,41 @@ frappe.ui.form.on("XTC Automated Payment", {
         },
       };
     });
+
+    frm.set_query("contact", "suppliers", function (doc, cdt, cdn) {
+      let child = locals[cdt][cdn];
+
+      return {
+        query: "frappe.contacts.doctype.contact.contact.contact_query",
+        filters: {
+          link_doctype: "Supplier",
+          link_name: child.supplier,
+        },
+      };
+    });
   },
 
   add_custom_buttons: function (frm) {
+    frm.add_custom_button(
+      __("Make Payment Entry"),
+      () => {
+        return frm
+          .call({
+            method: "make_payment_entry",
+            doc: frm.doc,
+            args: {},
+            freeze: true,
+          })
+          .then((r) => {
+            frappe.timeout(0.5).then(() => {
+              frm.reload_doc();
+              frappe.msgprint(__("Payment Entries have been created."));
+            });
+          });
+      },
+      __("Tools")
+    );
+
     frm.add_custom_button(
       __("Download Bank csv"),
       () => {
@@ -76,26 +108,6 @@ frappe.ui.form.on("XTC Automated Payment", {
           })
           .then((r) => {
             frm.reload_doc();
-          });
-      },
-      __("Tools")
-    );
-
-    frm.add_custom_button(
-      __("Make Payment Entry"),
-      () => {
-        return frm
-          .call({
-            method: "make_payment_entry",
-            doc: frm.doc,
-            args: {},
-            freeze: true,
-          })
-          .then((r) => {
-            frappe.timeout(0.5).then(() => {
-              frm.reload_doc();
-              frappe.msgprint(__("Payment Entries have been created."));
-            });
           });
       },
       __("Tools")

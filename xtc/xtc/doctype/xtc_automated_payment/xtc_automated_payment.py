@@ -177,6 +177,11 @@ class XTCAutomatedPayment(Document):
 
     @frappe.whitelist()
     def make_payment_entry(self):
+        if not sum(
+            d.amount_to_pay for d in self.payment_details if not d.payment_entry
+        ):
+            frappe.throw(_("No supplier payments to create Payment Entry."))
+
         for supplier in set(
             d.supplier for d in self.payment_details if not d.payment_entry
         ):

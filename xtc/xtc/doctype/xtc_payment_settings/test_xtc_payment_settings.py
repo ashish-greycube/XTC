@@ -4,5 +4,5 @@
 # import frappe
 import unittest
 
-class TestXTCSettings(unittest.TestCase):
+class TestXTCPaymentSettings(unittest.TestCase):
 	pass

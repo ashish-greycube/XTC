@@ -272,7 +272,7 @@ class XTCAutomatedPayment(Document):
     @frappe.whitelist()
     def send_bank_summary(self):
         """email bank payment summary to session user"""
-        settings = frappe.get_cached_doc("XTC Settings")
+        settings = frappe.get_cached_doc("XTC Payment Settings")
 
         file_name = "Bank Payment Summary_{}_{}".format(self.name, self.payment_date)
         out = frappe.attach_print(
@@ -308,7 +308,7 @@ class XTCAutomatedPayment(Document):
     @frappe.whitelist()
     def send_supplier_payment_advice_emails(self):
         """email bank payment advice to each suppplier in child table"""
-        settings = frappe.get_cached_doc("XTC Settings")
+        settings = frappe.get_cached_doc("XTC Payment Settings")
 
         _payment_details = self.payment_details
 

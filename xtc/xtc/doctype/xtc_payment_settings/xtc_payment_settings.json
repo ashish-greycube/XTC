@@ -1,6 +1,6 @@
 {
  "actions": [],
- "creation": "2023-03-24 12:08:59.317662",
+ "creation": "2023-05-10 14:40:04.189522",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -15,6 +15,11 @@
  ],
  "fields": [
   {
+   "fieldname": "xtc_automated_payment",
+   "fieldtype": "Section Break",
+   "label": "XTC Automated Payment"
+  },
+  {
    "fieldname": "bank_payment_summary_format",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -23,19 +28,23 @@
    "reqd": 1
   },
   {
-   "fieldname": "bank_payment_summary_email_template",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Bank Payment Summary Email Template",
-   "options": "Email Template",
-   "reqd": 1
-  },
-  {
    "fieldname": "supplier_payment_advice_format",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Supplier Payment Advice Print  Format",
    "options": "Print Format",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_1_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_payment_summary_email_template",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Bank Payment Summary Email Template",
+   "options": "Email Template",
    "reqd": 1
   },
   {
@@ -52,24 +61,15 @@
    "label": "Email Address for Email Bank summary ",
    "options": "Email",
    "reqd": 1
-  },
-  {
-   "fieldname": "cb_1_column",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "xtc_automated_payment",
-   "fieldtype": "Section Break",
-   "label": "XTC Automated Payment"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-04-24 18:51:56.260373",
+ "modified": "2023-05-10 14:40:04.189522",
  "modified_by": "Administrator",
  "module": "XTC",
- "name": "XTC Settings",
+ "name": "XTC Payment Settings",
  "owner": "Administrator",
  "permissions": [
   {

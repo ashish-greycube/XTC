@@ -249,7 +249,7 @@ class XTCAutomatedPayment(Document):
                     ts.supplier_party_account_id_cf,
                     ts.supplier_party_name_cf, 
                     tpe.paid_amount,
-                    tpe.name
+                    REPLACE(tpe.name,"-",'')
                 from `tabPayment Entry` tpe 
                 inner join (
                     select 

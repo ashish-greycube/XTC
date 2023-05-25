@@ -41,10 +41,10 @@ frappe.ui.form.on("Supplier", {
           }
           break;
         case "M":
-          if (!/^\+852\d{8}$/.test(account_id))
+          if (!/^\d{8}$/.test(account_id))
             frappe.throw(
               __(
-                "Please set a valid mobile number (+852XXXXXXXX) for Supplier Account ID."
+                "Please set a valid mobile number (XXXXXXXX) of 8 digits for Supplier Account ID."
               )
             );
           break;

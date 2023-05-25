@@ -56,7 +56,7 @@ class XTCAutomatedPayment(Document):
                 ):
                     invalid.append("Email: %s" % d.supplier_party_account_id_cf)
             elif d.supplier_party_account_type_cf == "M":
-                if not re.match("^\+852\d{8}$", d.supplier_party_account_id_cf or ""):
+                if not re.match("^\d{8}$", d.supplier_party_account_id_cf or ""):
                     invalid.append(
                         "Mobile: %s" % (d.supplier_party_account_id_cf or "")
                     )

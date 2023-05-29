@@ -1,0 +1,156 @@
+<style> 
+.print-format {
+       margin-top:2mm;  
+       margin-bottom: 0mm;
+  } 
+.reddiv {
+    width: 99mm;
+    height: 40mm;
+  }
+#left-div {
+  width: 60%;
+  float: left;
+}
+#right-div {
+  width: 40%;
+  float: right;
+  max-height:40mm;
+}
+.performance-facts {
+  border: 1px solid black !important;
+  margin: 5px;
+  float: right;
+  width: 160px;
+  width:auto;
+  padding: 0.1rem;
+  margin-left:10pt!important;
+  margin-top:-0.1rem;
+  max-height:40mm;
+  overflow:hidden;
+  table {
+    border-collapse: collapse!important;
+  }
+}
+.performance-facts__title {
+  font-size: 0.7rem;
+  border-bottom:1px solid black;
+  text-align: center;
+  margin-top:0px!important;
+  padding:0px!important;
+  margin: 0 0 0.25rem 0;
+}
+.performance-facts__header {
+  border-bottom: 1px solid black;
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+}
+.performance-facts__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0; 
+}
+.performance-facts__table tbody tr th{
+  font-size: 5pt!important;
+  font-weight: normal;
+}
+.performance-facts__table tbody tr td{
+  font-size: 5pt!important;
+  font-weight: normal;
+}
+.performance-facts__table tbody tr{
+    line-height:0.3rem!important;
+}
+.performance-facts__table td, th {
+    padding: 4pt 4pt!important;
+  }
+  
+  #leftbox {
+      float:left;
+      width:30%;  
+  }
+  #middlebox{
+      float:left;
+      width:55%; 
+  }
+  #middlebox p{
+      font-size:7pt;
+      margin-left:10pt;
+      line-height: 5pt;
+  }
+  #rightbox{
+      float:right;
+      width:15%;
+  }
+  </style>    
+
+<div class="reddiv" style="padding:1mm;">
+              <div id="left-div">
+                
+                    <span class="text-capitalize" style="letter-spacing:1px;font-size:{{font_size_item_name_cf}};"><b>{{item_name or ''}}</b></span>
+                    <span class="text-capitalize" style="font-size:{{font_size_description_cf}};"><b>{{ description_ or '' }}</b></span>
+
+                    {% if ingredients_cf %}
+                    <p class="ing" style="font-size:{{font_size_ingredients_cf}};">Ingrdients: {{ ingredients_cf or '' }}
+                    </p>
+                    {% endif %}
+                    
+                             <div id = "boxes" style="width:100%;margin-top:12pt;">
+            
+                                    <div id = "leftbox">
+                                        <img src="data:image/png;base64,{{get_qr_code('Batch',batch_id,scale=1)}}" class="qrcode" style="margin-top: 6pt;height: 17.5mm;width:17.5mm;" >
+                                    </div>
+                                     
+                                    <div id = "middlebox" >
+                                       
+                                        {% for barcode in barcodes %}
+                                            <p><b>{{ barcode or '' }}</b></p>
+                                        {% endfor %}
+                                          <p><b>{{ batch_id or '' }}</b></p>
+                                          <p><b>BBD: {{ expiry_date_ or '' }}</b></p>
+                                          <p><b>PRO: {{ manufacturing_date or '' }}</b></p>
+                                    </div>
+                                    
+                                    <div id = "rightbox"> 
+                                        {% if is_product_halal_cf==1 %}
+                                                <img src="{{ halal_logo }}" style="height:50pt;width: 50pt;margin-left:-25pt;margin-top:6pt;" >  
+                                        {% endif %}
+                                    </div>
+                                    
+                            </div>
+
+                </div>
+                
+                
+                 <div id="right-div">
+                     
+                      {% if nutrition_information_cf %}
+                
+                        <section class="performance-facts">
+                            <header class="performance-facts__header">
+                                <h1 class="performance-facts__title" >Nutrition Information</h1>
+                                <font class="small-info" style="font-size:5pt;margin-top:0pt;margin-left:70pt;">per 100gr</font>
+                            </header>
+                          
+                          <table class="performance-facts__table table-condensed ">
+                              
+                            <tbody>
+                                {% for row in nutrition_information_cf %}
+                                    {% if row.value %}
+                                      <tr>
+                                            <td colspan="1" style="text-align: left;">{{row.name1}}</td>
+                                            <td style="text-align: right;" colspan="2">{{row.value}}</td>
+                                      </tr>
+                                      
+                                    {% endif %}
+                               {% endfor %}
+                            </tbody>
+                            
+                          </table>
+                          
+                        </section>
+                    {% endif %}
+                        
+                </div>
+
+      </div>

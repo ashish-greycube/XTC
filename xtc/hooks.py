@@ -34,6 +34,8 @@ app_license = "MIT"
 doctype_js = {
     "Supplier": "public/js/supplier.js",
     "Payment Entry": "public/js/payment_entry.js",
+    "Batch":"public/js/batch.js",
+    "Work Order":"public/js/work_order.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -56,8 +58,17 @@ doctype_js = {
 # automatically create page for each record of this doctype
 # website_generators = ["Web Page"]
 
+jenv = {
+	"methods": [
+		"get_qr_code:xtc.utils.jinja.get_qr_code"
+	]
+}
+
+
 # Installation
 # ------------
+
+
 
 # before_install = "xtc.install.before_install"
 after_migrate = "xtc.install.after_install"

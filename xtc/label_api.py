@@ -42,6 +42,7 @@ def get_label_print_pdf(doctype,docname, print_format="Ice Cream Printing Label"
      font_size_description_cf=item.get('font_size_description_cf')
      font_size_ingredients_cf=item.get('font_size_description_cf')
      is_product_halal_cf=item.get('is_product_halal_cf')
+     nutrition_unit_cf=item.get('nutrition_unit_cf')
 
      barcodes = []
 
@@ -60,6 +61,7 @@ def get_label_print_pdf(doctype,docname, print_format="Ice Cream Printing Label"
           "description_":description,
           "ingredients_cf":ingredients_cf,
           "nutrition_information_cf":nutrition_information_cf,
+          "nutrition_unit_cf":nutrition_unit_cf,
           "batch_id":batch_id,
           "expiry_date_":expiry_date,
           "manufacturing_date":manufacturing_date,
@@ -76,7 +78,7 @@ def get_label_print_pdf(doctype,docname, print_format="Ice Cream Printing Label"
      options={
         "page-width": "120mm",
         "page-height": "50mm",
-        "margin-left":"19mm",
+        "margin-left":"17mm",
         "margin-right":"0mm"        
 }
      frappe.local.response.filename = "{name}.pdf".format(

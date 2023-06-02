@@ -9,6 +9,7 @@ def execute():
                 label="Ingredients",
                 fieldtype="Small Text",
                 insert_after="description",
+                translatable=0,
             ),
             dict(
                 fieldname="custom_section_break",
@@ -39,6 +40,16 @@ def execute():
                 default=0,  
             ),
             dict(
+                fieldname="nutrition_unit_cf",
+                label="Nutrition Unit",
+                fieldtype="Data",
+                insert_after="is_product_halal_cf",
+                description="ex. per 100gr, per 100ml",
+                default="per 100gr",
+                translatable=0,
+                
+            ),
+            dict(
                 fieldname="col_break_font_size_cf",
                 label="",
                 fieldtype="Column Break",
@@ -49,7 +60,7 @@ def execute():
                 label="Item Name Font Size(pt)",
                 fieldtype="Int",
                 insert_after="col_break_font_size_cf",
-                default="8",  
+                default="10",  
             ), 
             dict(
                 fieldname="font_size_description_cf",

@@ -38,6 +38,23 @@ frappe.ui.form.on("XTC Automated Payment", {
   },
 
   add_custom_buttons: function (frm) {
+    if (
+      frm.doc.docstatus == 1 &&
+      frm.doc.payment_entry_status === "Completed"
+    ) {
+      frm.add_custom_button("Close Payment", () => {
+        //
+        frm
+          .call({
+            method: "close_payment",
+            doc: frm.doc,
+          })
+          .then((r) => {
+            frm.reload_doc();
+          });
+      });
+    }
+
     frm.add_custom_button(
       __("Make Payment Entry"),
       () => {
@@ -175,16 +192,40 @@ frappe.ui.form.on("XTC Automated Payment", {
       total_amount += itr.amount_to_pay;
     }
     frm.set_value("total_amount", total_amount);
+
+    // set supplier totals
+    for (const d of frm.doc.suppliers) {
+      d.amount_to_pay = frm.doc.payment_details
+        .filter((t) => t.supplier == d.supplier)
+        .reduce((total, t) => total + t.amount_to_pay, 0);
+    }
+    frm.refresh_field("suppliers");
   },
 });
 
 frappe.ui.form.on("XTC Automated Payment Detail", {
+  amount_to_pay: function (frm) {
+    frm.trigger("set_total");
+  },
+
   payment_details_remove: function (frm) {
     let suppliers = frm.doc.payment_details.map((r) => r.supplier);
     frm.doc.suppliers = frm.doc.suppliers.filter((t) =>
       suppliers.includes(t.supplier)
     );
     frm.refresh_field("suppliers");
+    frm.trigger("set_total");
+  },
+});
+
+frappe.ui.form.on("Request for Quotation Supplier", {
+  suppliers_remove: function (frm) {
+    debugger;
+    let suppliers = frm.doc.suppliers.map((r) => r.supplier);
+    frm.doc.payment_details = frm.doc.payment_details.filter((t) =>
+      suppliers.includes(t.supplier)
+    );
+    frm.refresh_field("payment_details");
     frm.trigger("set_total");
   },
 });

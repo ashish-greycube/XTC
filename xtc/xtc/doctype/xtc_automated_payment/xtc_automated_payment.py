@@ -13,6 +13,7 @@ from erpnext.accounts.doctype.payment_entry.payment_entry import (
     get_payment_entry,
 )
 import re
+import operator
 
 
 class XTCAutomatedPayment(Document):
@@ -27,6 +28,23 @@ class XTCAutomatedPayment(Document):
                     ).format(d.amount_to_pay, d.outstanding_amount)
                 )
         self.total_amount = sum([flt(d.amount_to_pay) for d in self.payment_details])
+
+        # sort payments by supplier, invoice_no
+        self.payment_details = sorted(
+            self.payment_details, key=lambda x: x.supplier + x.purchase_invoice
+        )
+
+        for idx, d in enumerate(self.payment_details):
+            d.idx = idx
+
+        self.suppliers = sorted(self.suppliers, key=lambda x: x.supplier)
+
+        for idx, d in enumerate(self.suppliers):
+            d.idx = idx
+
+    @frappe.whitelist()
+    def close_payment(self):
+        self.db_set("payment_entry_status", "Closed", commit=True, notify=True)
 
     def validate_suppliers(self):
         for d in frappe.get_all(
@@ -100,17 +118,11 @@ class XTCAutomatedPayment(Document):
         if not len(df):
             frappe.msgprint("No payments found matching selected criteria.")
 
-        for _, d in df.iterrows():
-            if len(
-                list(
-                    filter(
-                        lambda x: x.purchase_invoice == d.voucher_no,
-                        self.get("payment_details", []),
-                    )
-                )
-            ):
-                continue
+        # filter df to remove invoices already added
+        _vouchers = [d.purchase_invoice for d in self.get("payment_details", [])]
+        df = df[~df["voucher_no"].isin(_vouchers)]
 
+        for _, d in df.iterrows():
             self.append(
                 "payment_details",
                 {

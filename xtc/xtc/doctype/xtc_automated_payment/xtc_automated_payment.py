@@ -257,7 +257,7 @@ class XTCAutomatedPayment(Document):
             """
                 select 
                     ts.supplier_party_account_type_cf,
-                    ts.supplier_party_bank_code_cf,
+                    concat('''',ts.supplier_party_bank_code_cf),
                     ts.supplier_party_account_id_cf,
                     ts.supplier_party_name_cf, 
                     tpe.paid_amount,

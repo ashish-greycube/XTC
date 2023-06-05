@@ -3,7 +3,7 @@ frappe.ui.form.on('Batch', {
 
 		// frm.remove_custom_button('Label Print');
 		// let buttonlabel = __("Batch")+ ' ' +frm.doc.batch_id;
-		frm.add_custom_button(('Label Print'),function(){
+		frm.add_custom_button(('W/S label'),function(){
 			let url = `/api/method/xtc.label_api.get_icecream_label_print_pdf`;
 			let args = {
 			  doctype: frm.doc.doctype,

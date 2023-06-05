@@ -81,8 +81,25 @@ def get_label_print_pdf(doctype,docname, print_format="Ice Cream Printing Label"
         "margin-left":"17mm",
         "margin-right":"0mm"        
 }
-     frappe.local.response.filename = "{name}.pdf".format(
-        name=docname.replace(" ", "-").replace("/", "-")
-    )
-     frappe.local.response.filecontent = get_pdf(html,options)
-     frappe.local.response.type = "pdf"
+     user=frappe.session.user
+
+     # # del all existing pdf of the user
+     doc_name_search='icecream_label_'+user.lower()+'_'
+     file_names = frappe.get_all('File',filters={'file_name': ['like', '%{}%'.format(doc_name_search)]})
+     for file_name in file_names:
+          frappe.delete_doc('File', file_name.name)
+     pdf=get_pdf(html,options)
+     docname='icecream_label_'+user.lower()+'_'+frappe.generate_hash()[:8]
+     _file = frappe.get_doc({
+          "doctype": "File",
+          "file_name": docname,
+          "folder": "Home",
+          "content": pdf})
+     _file.save()
+     return _file.file_url
+   
+#      frappe.local.response.filename = "{name}.pdf".format(
+#         name=docname.replace(" ", "-").replace("/", "-")
+#     )
+#      frappe.local.response.filecontent = get_pdf(html,options)
+#      frappe.local.response.type = "pdf"

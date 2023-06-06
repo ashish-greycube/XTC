@@ -13,7 +13,7 @@ frappe.ui.form.on('Batch', {
 		};
 		open_url_post(url, args, true);			
 	});
-	frm.add_custom_button(('Exp'),function(){
+	frm.add_custom_button(('PJS'),function(){
 		let args = {
 			doctype: frm.doc.doctype,
 			docname:frm.doc.name,
@@ -25,7 +25,9 @@ frappe.ui.form.on('Batch', {
 			  async: false,
 			  callback: (r) => {
 				  console.log(r.message)
-				  printJS({printable:r.message, type:'pdf'})
+				  printJS({printable:r.message, type:'pdf',   onError: function  (error) {
+					alert('Error found => ' + error.message)
+				  }})
 			  },
 			  error: (r) => {
 				  console.log(r)

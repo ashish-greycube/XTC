@@ -12,19 +12,17 @@
        margin-bottom: 0mm;
   } 
 .reddiv {
-    position: fixed;
     width: 99mm;
     height: 40mm;
   }
 #left-div {
-  position: fixed;
-  width: 62.37mm;
+  width: 63%;
+  float: left;
 }
 #right-div {
-  position: fixed;
-  margin-left: 62.37mm;
-  width: 36.63mm;
-  height:40mm;
+  width: 37%;
+  float: right;
+  max-height:40mm;
 }
 .performance-facts {
   border: 1px solid black !important;
@@ -94,23 +92,18 @@
   }
   </style>    
 
-<div class="reddiv gotham" >
+<div class="reddiv gotham" style="padding:2px;">
               <div id="left-div">
                 
-                    <span style="position:fixed; margin-top:1mm ; width:68mm; letter-spacing:0.5px;font-size:{{font_size_item_name_cf}};"><b>{{item_name or ''}}</b></span>
-                    <span class="text-capitalize" style="position:fixed; width:68mm; margin-top:5mm ;font-size:{{font_size_description_cf}};"><b>{{ description_ or '' }}</b></span>
+                    <span style="letter-spacing:0.5px;font-size:{{font_size_item_name_cf}};"><b>{{item_name or ''}}</b></span>
+                    <span class="text-capitalize" style="font-size:{{font_size_description_cf}};"><b>{{ description_ or '' }}</b></span>
 
-                    {% if ingredients_cf and nutrition_information_cf%}
-                    <p  style="position:fixed; margin-top:11mm; width:68mm; font-size:{{font_size_ingredients_cf}};">Ingredients: {{ ingredients_cf or '' }}
+                    {% if ingredients_cf %}
+                    <p class="ing" style="font-size:{{font_size_ingredients_cf}};">Ingredients: {{ ingredients_cf or '' }}
                     </p>
                     {% endif %}
-
-                    {% if ingredients_cf and not nutrition_information_cf%}
-                    <p  style="position:fixed; margin-top:11mm; width:97mm; font-size:{{font_size_ingredients_cf}};">Ingredients: {{ ingredients_cf or '' }}
-                    </p>
-                    {% endif %}                    
                     
-                             <div id = "boxes" style="position:fixed; margin-top:20mm ;width:62.37mm">
+                             <div id = "boxes" style="width:100%;margin-top:-7pt;">
             
                                     <div id = "leftbox">
                                         <img src="data:image/png;base64,{{get_qr_code('Batch',batch_id,scale=1)}}" class="qrcode" style="margin-top: 6pt;height: 17.5mm;width:17.5mm;" >

@@ -3,13 +3,9 @@ from frappe import _
 from frappe.utils import get_site_url
 from frappe.utils.pdf import get_pdf
 
-@frappe.whitelist()
-def get_icecream_label_print_pdf(doctype,docname, print_format="Ice Cream Printing Label"):
-
-     return get_label_print_pdf(doctype,docname, print_format)
 
 @frappe.whitelist()
-def get_label_print_pdf(doctype,docname, print_format="Ice Cream Printing Label"):
+def get_icecream_label_print_pdf(doctype,docname, print_type='indirectpdf'):
 
      if doctype=='Batch':
           item_code=frappe.db.get_value(doctype,docname,'item')
@@ -81,25 +77,27 @@ def get_label_print_pdf(doctype,docname, print_format="Ice Cream Printing Label"
         "margin-left":"17mm",
         "margin-right":"0mm"        
 }
-    
-     # user=frappe.session.user
-     # # # del all existing pdf of the user
-     # doc_name_search='icecream_label_'+user.lower()+'_'
-     # file_names = frappe.get_all('File',filters={'file_name': ['like', '%{}%'.format(doc_name_search)]})
-     # for file_name in file_names:
-     #      frappe.delete_doc('File', file_name.name)
-     # pdf=get_pdf(html,options)
-     # docname='icecream_label_'+user.lower()+'_'+frappe.generate_hash()[:8]
-     # _file = frappe.get_doc({
-     #      "doctype": "File",
-     #      "file_name": docname,
-     #      "folder": "Home",
-     #      "content": pdf})
-     # _file.save()
-     # return _file.file_url
+     if print_type=='indirectpdf':
+          frappe.local.response.filename = "{name}.pdf".format(
+          name=docname.replace(" ", "-").replace("/", "-")
+     )
+          frappe.local.response.filecontent = get_pdf(html,options)
+          frappe.local.response.type = "pdf" 
+
+     elif print_type=='directpdf':     
+          user=frappe.session.user
+          # # del all existing pdf of the user
+          doc_name_search='icecream_label_'+user.lower()+'_'
+          file_names = frappe.get_all('File',filters={'file_name': ['like', '%{}%'.format(doc_name_search)]})
+          for file_name in file_names:
+               frappe.delete_doc('File', file_name.name)
+          pdf=get_pdf(html,options)
+          docname='icecream_label_'+user.lower()+'_'+frappe.generate_hash()[:8]+".pdf"
+          _file = frappe.get_doc({
+               "doctype": "File",
+               "file_name": docname,
+               "folder": "Home",
+               "content": pdf})
+          _file.save()
+          return _file.file_url
    
-     frappe.local.response.filename = "{name}.pdf".format(
-        name=docname.replace(" ", "-").replace("/", "-")
-    )
-     frappe.local.response.filecontent = get_pdf(html,options)
-     frappe.local.response.type = "pdf"

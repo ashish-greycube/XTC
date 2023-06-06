@@ -14,7 +14,7 @@ frappe.ui.form.on('Work Order', {
                     let args = {
                         doctype: frm.doc.doctype,
                         docname: frm.doc.name,
-                        print_format: 'Ice Cream Printing Label'
+                        print_type:'indirectpdf'
                     };
                     open_url_post(url, args, true);
                 });

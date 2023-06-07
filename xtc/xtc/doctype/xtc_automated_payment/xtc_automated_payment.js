@@ -38,25 +38,8 @@ frappe.ui.form.on("XTC Automated Payment", {
   },
 
   add_custom_buttons: function (frm) {
-    if (
-      frm.doc.docstatus == 1 &&
-      frm.doc.payment_entry_status === "Completed"
-    ) {
-      frm.add_custom_button("Close Payment", () => {
-        //
-        frm
-          .call({
-            method: "close_payment",
-            doc: frm.doc,
-          })
-          .then((r) => {
-            frm.reload_doc();
-          });
-      });
-    }
-
     frm.add_custom_button(
-      __("Make Payment Entry"),
+      __("Draft Payment Entry"),
       () => {
         return frm
           .call({
@@ -68,7 +51,7 @@ frappe.ui.form.on("XTC Automated Payment", {
           .then((r) => {
             frappe.timeout(0.5).then(() => {
               frm.reload_doc();
-              frappe.msgprint(__("Payment Entries have been created."));
+              frappe.msgprint(__("Draft Payment Entries have been created."));
             });
           });
       },
@@ -97,6 +80,23 @@ frappe.ui.form.on("XTC Automated Payment", {
     );
 
     frm.add_custom_button(
+      __("Email Bank Summary"),
+      () => {
+        return frm
+          .call({
+            method: "send_bank_summary",
+            doc: frm.doc,
+            args: {},
+            freeze: true,
+          })
+          .then((r) => {
+            frm.reload_doc();
+          });
+      },
+      __("Tools")
+    );
+
+    frm.add_custom_button(
       __("Email Supplier Payment Advice"),
       () => {
         return frm
@@ -113,22 +113,26 @@ frappe.ui.form.on("XTC Automated Payment", {
       __("Tools")
     );
 
-    frm.add_custom_button(
-      __("Email Bank Summary"),
-      () => {
-        return frm
-          .call({
-            method: "send_bank_summary",
-            doc: frm.doc,
-            args: {},
-            freeze: true,
-          })
-          .then((r) => {
-            frm.reload_doc();
-          });
-      },
-      __("Tools")
-    );
+    if (
+      frm.doc.docstatus == 1 &&
+      frm.doc.payment_entry_status === "Completed"
+    ) {
+      frm.add_custom_button(
+        "Submit & Close Payment",
+        () => {
+          //
+          frm
+            .call({
+              method: "close_payment",
+              doc: frm.doc,
+            })
+            .then((r) => {
+              frm.reload_doc();
+            });
+        },
+        __("Tools")
+      );
+    }
   },
 
   refresh: function (frm) {

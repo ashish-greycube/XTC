@@ -23,13 +23,18 @@ frappe.ui.form.on("Supplier", {
   },
 
   validate: function (frm) {
-    let account_id = frm.doc.supplier_party_account_id_cf;
+    let account_id = frm.doc.supplier_party_account_id_cf || "";
     if (account_id) {
       switch (frm.doc.supplier_party_account_type_cf) {
         case "A":
-          if (!frappe.utils.validate_type(account_id, "digits")) {
+          if (
+            !frappe.utils.validate_type(account_id, "digits") ||
+            account_id.length > 12
+          ) {
             frappe.throw(
-              __("Please set a valid Account Number for Supplier Account ID.")
+              __(
+                "Please set a valid Account Number (number upto 12 digits) for Supplier Account ID."
+              )
             );
           }
           break;

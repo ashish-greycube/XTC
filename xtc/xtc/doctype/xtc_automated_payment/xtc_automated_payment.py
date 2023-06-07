@@ -44,7 +44,17 @@ class XTCAutomatedPayment(Document):
 
     @frappe.whitelist()
     def close_payment(self):
+        for d in frappe.get_all(
+            "Payment Entry",
+            filters={
+                "docstatus": 0,
+                "name": ("in", [d.payment_entry for d in self.payment_details]),
+            },
+        ):
+            frappe.get_doc("Payment Entry", d).submit()
         self.db_set("payment_entry_status", "Closed", commit=True, notify=True)
+        frappe.db.commit()
+        frappe.msgprint(_("Payment Entries submitted."))
 
     def validate_suppliers(self):
         for d in frappe.get_all(
@@ -64,9 +74,15 @@ class XTCAutomatedPayment(Document):
                 if (
                     not d.supplier_party_bank_code_cf
                     or not d.supplier_party_bank_code_cf.isnumeric()
+                    or not d.supplier_party_account_id_cf.isnumeric()
+                    or len(d.supplier_party_account_id_cf) > 12
                 ):
                     invalid.append(
-                        "Bank Code: %s" % (d.supplier_party_bank_code_cf or "")
+                        "Bank Code: %s, Account Number: %s"
+                        % (
+                            d.supplier_party_bank_code_cf or "",
+                            d.supplier_party_account_id_cf,
+                        )
                     )
             elif d.supplier_party_account_type_cf == "E":
                 if not frappe.utils.validate_email_address(
@@ -185,6 +201,18 @@ class XTCAutomatedPayment(Document):
             )
             df = df[df["supplier_group"].isin(supplier_groups)]
 
+        # remove on hold purchase invoices
+
+        not_on_hold = frappe.db.sql_list(
+            """
+            select name from `tabPurchase Invoice`
+            where name in ({}) and on_hold = 0
+        """.format(
+                ",".join(f"'{d}'" for d in df["voucher_no"].to_list())
+            )
+        )
+        df = df[df["voucher_no"].isin(not_on_hold)]
+
         return df
 
     @frappe.whitelist()
@@ -222,7 +250,7 @@ class XTCAutomatedPayment(Document):
 
             pe.validate()
             pe.insert()
-            pe.submit()
+            # pe.submit()
 
             # update link in child table
             for d in payments:

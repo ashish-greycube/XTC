@@ -388,10 +388,10 @@ class XTCAutomatedPayment(Document):
                 print_format=settings.supplier_payment_advice_format,
                 doc=self,
             )
-            with open(f"{self.name}_test.pdf", "wb") as f:
-                f.write(out["fcontent"])
+            # with open(f"{self.name}_test.pdf", "wb") as f:
+            #     f.write(out["fcontent"])
             # attach_file(out, file_name, self.doctype, self.name)
-            return
+
             email_template = frappe.get_doc(
                 "Email Template", settings.supplier_payment_advice_email_template
             )

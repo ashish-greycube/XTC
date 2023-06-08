@@ -350,25 +350,31 @@ class XTCAutomatedPayment(Document):
         """email bank payment advice to each suppplier in child table"""
         settings = frappe.get_cached_doc("XTC Payment Settings")
 
-        _payment_details = self.payment_details
-
         for supplier in self.suppliers:
             if not cint(supplier.send_email) or cint(supplier.email_sent):
                 continue
 
-            payment_details = list(
-                filter(lambda x: x.supplier == supplier.supplier, _payment_details)
+            supplier_details = supplier.as_dict()
+
+            supplier_details["payment_details"] = frappe.db.sql(
+                """
+            select 
+                coalesce(tpi.bill_no,'-') bill_no , coalesce(tpi.bill_date,'-') bill_date , 
+                txapd.*
+            from `tabXTC Automated Payment Detail` txapd 
+            inner join `tabPurchase Invoice` tpi on tpi.name = txapd.purchase_invoice 
+            where txapd.supplier = %s and txapd.parent = %s
+            """,
+                (supplier.supplier, self.name),
+                as_dict=True,
             )
             address = frappe.db.get_value(
                 "Supplier", supplier.supplier, "supplier_primary_address"
             )
-
-            supplier_details = supplier.as_dict()
-            supplier_details["payment_details"] = payment_details
-            supplier_details["total_amount"] = sum(
-                [d.get("amount_to_pay") for d in payment_details]
-            )
             supplier_details["address_display"] = get_address_display(address)
+            supplier_details["total_amount"] = sum(
+                [d.get("amount_to_pay") for d in supplier_details["payment_details"]]
+            )
             self.supplier_details = supplier_details
 
             file_name = "{}_Payment Advice_{}_{}".format(
@@ -382,10 +388,10 @@ class XTCAutomatedPayment(Document):
                 print_format=settings.supplier_payment_advice_format,
                 doc=self,
             )
-            # with open(f"{self.name}_test.pdf", "wb") as f:
-            #     f.write(out["fcontent"])
+            with open(f"{self.name}_test.pdf", "wb") as f:
+                f.write(out["fcontent"])
             # attach_file(out, file_name, self.doctype, self.name)
-
+            return
             email_template = frappe.get_doc(
                 "Email Template", settings.supplier_payment_advice_email_template
             )

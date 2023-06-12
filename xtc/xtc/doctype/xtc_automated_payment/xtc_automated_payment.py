@@ -206,15 +206,16 @@ class XTCAutomatedPayment(Document):
 
         # remove on hold purchase invoices
 
-        not_on_hold = frappe.db.sql_list(
-            """
-            select name from `tabPurchase Invoice`
-            where name in ({}) and on_hold = 0
-        """.format(
-                ",".join(f"'{d}'" for d in df["voucher_no"].to_list())
+        if len(df):
+            not_on_hold = frappe.db.sql_list(
+                """
+                select name from `tabPurchase Invoice`
+                where name in ({}) and on_hold = 0
+            """.format(
+                    ",".join(f"'{d}'" for d in df["voucher_no"].to_list())
+                )
             )
-        )
-        df = df[df["voucher_no"].isin(not_on_hold)]
+            df = df[df["voucher_no"].isin(not_on_hold)]
 
         return df
 

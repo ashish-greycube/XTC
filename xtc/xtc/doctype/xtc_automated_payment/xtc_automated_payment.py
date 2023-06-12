@@ -138,6 +138,9 @@ class XTCAutomatedPayment(Document):
         _vouchers = [d.purchase_invoice for d in self.get("payment_details", [])]
         df = df[~df["voucher_no"].isin(_vouchers)]
 
+        # sort by purchaser, posting_date
+        df.sort_values(by=["party", "voucher_no"], inplace=True)
+
         for _, d in df.iterrows():
             self.append(
                 "payment_details",

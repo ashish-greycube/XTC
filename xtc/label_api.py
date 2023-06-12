@@ -36,7 +36,7 @@ def get_icecream_label_print_pdf(doctype,docname, print_type='indirectpdf'):
      ingredients_cf=item.get('ingredients_cf')
      font_size_item_name_cf=item.get('font_size_item_name_cf')
      font_size_description_cf=item.get('font_size_description_cf')
-     font_size_ingredients_cf=item.get('font_size_description_cf')
+     font_size_ingredients_cf=item.get('font_size_ingredients_cf')
      is_product_halal_cf=item.get('is_product_halal_cf')
      nutrition_unit_cf=item.get('nutrition_unit_cf')
 

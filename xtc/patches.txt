@@ -1,1 +1,1 @@
-xtc.patches.item_customization
+xtc.patches.item_customization_for_label

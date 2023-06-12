@@ -44,8 +44,8 @@ def execute():
                 label="Nutrition Unit",
                 fieldtype="Data",
                 insert_after="is_product_halal_cf",
-                description="ex. per 100gr, per 100ml",
-                default="per 100gr",
+                description="ex. per 100g, per 100ml",
+                default="per 100g",
                 translatable=0,
                 
             ),

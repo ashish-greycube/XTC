@@ -16,6 +16,7 @@
   "company",
   "supplier_group",
   "supplier",
+  "based_on_payment_terms",
   "fetch_accounts_payable",
   "column_break_5",
   "from_due_date",
@@ -51,6 +52,7 @@
    "label": "From Due Date"
   },
   {
+   "default": "Today",
    "fieldname": "to_due_date",
    "fieldtype": "Date",
    "label": "To Due Date"
@@ -187,12 +189,18 @@
   {
    "fieldname": "sb_ot_cb_0",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "based_on_payment_terms",
+   "fieldtype": "Check",
+   "label": "Based On Payment Terms"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-06-12 14:10:06.667072",
+ "modified": "2023-06-16 22:48:08.840785",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "XTC Automated Payment",

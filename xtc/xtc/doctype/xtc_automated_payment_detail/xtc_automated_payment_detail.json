@@ -30,7 +30,7 @@
    "reqd": 1
   },
   {
-   "columns": 2,
+   "columns": 3,
    "fieldname": "purchase_invoice",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -40,8 +40,10 @@
    "reqd": 1
   },
   {
+   "columns": 1,
    "fieldname": "due_date",
    "fieldtype": "Date",
+   "in_list_view": 1,
    "label": "Due Date"
   },
   {
@@ -103,7 +105,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-06-12 15:08:43.930315",
+ "modified": "2023-06-16 22:49:25.519969",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "XTC Automated Payment Detail",

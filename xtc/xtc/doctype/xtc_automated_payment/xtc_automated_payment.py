@@ -14,6 +14,7 @@ from erpnext.accounts.doctype.payment_entry.payment_entry import (
 )
 import re
 import operator
+from frappe.desk.query_report import get_report_result
 
 
 class XTCAutomatedPayment(Document):
@@ -107,7 +108,9 @@ class XTCAutomatedPayment(Document):
         self.validate_suppliers()
 
         supplier_emails = [
-            d.supplier_name for d in self.suppliers if not d.get("email_id")
+            d.supplier_name
+            for d in self.suppliers
+            if d.send_email and not d.get("email_id")
         ]
         if supplier_emails:
             frappe.throw(
@@ -133,13 +136,14 @@ class XTCAutomatedPayment(Document):
 
         if not len(df):
             frappe.msgprint("No payments found matching selected criteria.")
+            return
 
-        # filter df to remove invoices already added
-        _vouchers = [d.purchase_invoice for d in self.get("payment_details", [])]
-        df = df[~df["voucher_no"].isin(_vouchers)]
-
-        # sort by purchaser, posting_date
-        df.sort_values(by=["party", "voucher_no"], inplace=True)
+        # clear existing voucher if exists in payment details
+        #  as same voucher may appear multiple times with based_on_payment_terms
+        vouchers = set(df["voucher_no"].tolist())
+        self.payment_details = [
+            d for d in self.payment_details if not d.purchase_invoice in vouchers
+        ]
 
         for _, d in df.iterrows():
             self.append(
@@ -158,16 +162,13 @@ class XTCAutomatedPayment(Document):
                 },
             )
 
-    def get_invoices(self):
-        from erpnext.accounts.report.accounts_receivable.accounts_receivable import (
-            ReceivablePayableReport,
+        # sort again
+        self.payment_details = sorted(
+            self.payment_details, key=lambda cdn: (cdn.supplier, cdn.purchase_invoice)
         )
 
-        args = {
-            "party_type": "Supplier",
-            "naming_by": ["Buying Settings", "supp_master_name"],
-        }
-        _columns, ap_data, *other = ReceivablePayableReport(
+    def get_invoices(self):
+        filters = frappe._dict(
             {
                 "company": self.company,
                 "report_date": frappe.utils.today(),
@@ -176,36 +177,32 @@ class XTCAutomatedPayment(Document):
                 "range2": 60,
                 "range3": 90,
                 "range4": 120,
+                "based_on_payment_terms": cint(self.based_on_payment_terms),
+                "supplier_group": self.supplier_group
+                if not self.supplier_group == "All Supplier Groups"
+                else None,
+                "supplier": self.supplier,
             }
-        ).run(args)
+        )
+        accounts_payable = frappe.get_doc("Report", "Accounts Payable")
+        _columns, data, *other = get_report_result(accounts_payable, filters)
 
-        df = pd.DataFrame.from_records(ap_data)
+        if not data:
+            return pd.DataFrame()
+
+        df = pd.DataFrame.from_records(data)
         # filter
         df = df[df["voucher_type"] == "Purchase Invoice"]
         if self.from_due_date:
             df = df[df["due_date"] >= getdate(self.from_due_date)]
         if self.to_due_date:
             df = df[df["due_date"] <= getdate(self.to_due_date)]
-        if self.supplier:
-            df = df[df["party"] == self.supplier]
         if self.max_amount:
             df = df[df["outstanding"] <= self.max_amount]
         if self.min_amount:
             df = df[df["outstanding"] >= self.min_amount]
 
-        if self.supplier_group:
-            supplier_groups = frappe.db.sql_list(
-                """
-                select tsg.name from `tabSupplier Group` tsg
-                inner join `tabSupplier Group` tsg2 on tsg2.name = %s
-                    and tsg.lft >= tsg2.lft and tsg.rgt <= tsg2.rgt
-                """,
-                (self.supplier_group),
-            )
-            df = df[df["supplier_group"].isin(supplier_groups)]
-
         # remove on hold purchase invoices
-
         if len(df):
             not_on_hold = frappe.db.sql_list(
                 """
@@ -216,6 +213,9 @@ class XTCAutomatedPayment(Document):
                 )
             )
             df = df[df["voucher_no"].isin(not_on_hold)]
+
+        # sort by purchaser, posting_date
+        df.sort_values(by=["party", "voucher_no"], inplace=True)
 
         return df
 
@@ -289,7 +289,7 @@ class XTCAutomatedPayment(Document):
             """
                 select 
                     ts.supplier_party_account_type_cf,
-                    concat('''',ts.supplier_party_bank_code_cf),
+                    ts.supplier_party_bank_code_cf,
                     ts.supplier_party_account_id_cf,
                     ts.supplier_party_name_cf, 
                     tpe.paid_amount,

@@ -15,6 +15,7 @@ from erpnext.accounts.doctype.payment_entry.payment_entry import (
 import re
 import operator
 from frappe.desk.query_report import get_report_result
+import itertools
 
 
 class XTCAutomatedPayment(Document):
@@ -141,9 +142,10 @@ class XTCAutomatedPayment(Document):
         # clear existing voucher if exists in payment details
         #  as same voucher may appear multiple times with based_on_payment_terms
         vouchers = set(df["voucher_no"].tolist())
-        self.payment_details = [
-            d for d in self.payment_details if not d.purchase_invoice in vouchers
-        ]
+        if self.get("payment_details"):
+            self.payment_details = [
+                d for d in self.payment_details if not d.purchase_invoice in vouchers
+            ]
 
         for _, d in df.iterrows():
             self.append(
@@ -242,13 +244,18 @@ class XTCAutomatedPayment(Document):
             pe.paid_from = self.paid_from
 
             pe.references = []
-            for d in payments:
+            payments = sorted(payments, key=operator.attrgetter("purchase_invoice"))
+
+            # for d in payments:
+            for pi, grp in itertools.groupby(
+                payments, key=operator.attrgetter("purchase_invoice")
+            ):
                 pe.append(
                     "references",
                     {
                         "reference_doctype": "Purchase Invoice",
-                        "reference_name": d.purchase_invoice,
-                        "allocated_amount": d.amount_to_pay,
+                        "reference_name": pi,
+                        "allocated_amount": sum([d.amount_to_pay for d in grp]),
                     },
                 )
 

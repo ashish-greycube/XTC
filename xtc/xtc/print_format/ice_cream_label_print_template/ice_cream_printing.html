@@ -8,7 +8,7 @@
      font-family: 'Gotham' !important;
   }
 .print-format {
-       margin-top:2mm;  
+       margin-top:3mm;  
        margin-bottom: 0mm;
   } 
 .reddiv {
@@ -100,15 +100,15 @@
               <div id="left-div">
                 
                     <span style="position:fixed; margin-top:1mm ; width:68mm; letter-spacing:0.5px;font-size:{{font_size_item_name_cf}};"><b>{{item_name or ''}}</b></span>
-                    <span class="text-capitalize" style="position:fixed; width:68mm; margin-top:5mm ;font-size:{{font_size_description_cf}};"><b>{{ description_ or '' }}</b></span>
+                    <span class="text-capitalize" style="position:fixed; width:68mm; margin-top:5.5mm ;font-size:{{font_size_description_cf}};"><b>{{ description_ or '' }}</b></span>
 
                     {% if ingredients_cf and nutrition_information_cf%}
-                    <p  style="position:fixed; margin-top:11mm; width:67mm;font-size:{{font_size_ingredients_cf}};">Ingredients: {{ ingredients_cf or '' }}
+                    <p  style="position:fixed; margin-top:10mm; width:67mm;font-size:{{font_size_ingredients_cf}};">Ingredients: {{ ingredients_cf or '' }}
                     </p>
                     {% endif %}
 
                     {% if ingredients_cf and not nutrition_information_cf%}
-                    <p  style="position:fixed; margin-top:11mm; width:97mm; font-size:{{font_size_ingredients_cf}};">Ingredients: {{ ingredients_cf or '' }}
+                    <p  style="position:fixed; margin-top:10mm; width:97mm; font-size:{{font_size_ingredients_cf}};">Ingredients: {{ ingredients_cf or '' }}
                     </p>
                     {% endif %}                    
                     

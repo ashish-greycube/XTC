@@ -98,10 +98,14 @@
 
 <div class="reddiv gotham" >
               <div id="left-div">
-                
+                    {% if nutrition_information_cf%}
                     <span style="position:fixed; margin-top:1mm ; width:68mm; letter-spacing:0.5px;font-size:{{font_size_item_name_cf}};"><b>{{item_name or ''}}</b></span>
                     <span class="text-capitalize" style="position:fixed; width:68mm; margin-top:6.5mm ;font-size:{{font_size_description_cf}};"><b>{{ description_ or '' }}</b></span>
-
+                    {% endif %}
+                    {% if not nutrition_information_cf%}
+                    <span style="position:fixed; margin-top:1mm ; width:97mm; letter-spacing:0.5px;font-size:{{font_size_item_name_cf}};"><b>{{item_name or ''}}</b></span>
+                    <span class="text-capitalize" style="position:fixed; width:97mm; margin-top:6.5mm ;font-size:{{font_size_description_cf}};"><b>{{ description_ or '' }}</b></span>                    
+                    {% endif %}
                     {% if ingredients_cf and nutrition_information_cf%}
                     <p  style="position:fixed; margin-top:10mm; width:67mm;font-size:{{font_size_ingredients_cf}};">Ingredients: {{ ingredients_cf or '' }}
                     </p>

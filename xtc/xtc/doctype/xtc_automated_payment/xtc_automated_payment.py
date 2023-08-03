@@ -173,7 +173,7 @@ class XTCAutomatedPayment(Document):
         filters = frappe._dict(
             {
                 "company": self.company,
-                "report_date": frappe.utils.today(),
+                "report_date": self.to_due_date or frappe.utils.today(),
                 "ageing_based_on": "Due Date",
                 "range1": 30,
                 "range2": 60,

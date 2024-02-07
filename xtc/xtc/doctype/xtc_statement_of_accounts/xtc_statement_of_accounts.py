@@ -66,7 +66,7 @@ def get_report_pdf(doc, consolidated=True):
 		payment_terms=frappe.db.get_value('Customer', entry.customer, 'payment_terms')
 		# print(entry.idx,'entry.customer',entry.customer,'payment_terms',payment_terms)
 		if (entry.customer):
-		# if (entry.customer):
+		# if (entry.customer):	
 			filters = frappe._dict(
 				{
 					"to_date": doc.to_date,
@@ -96,8 +96,9 @@ def get_report_pdf(doc, consolidated=True):
 			total_range_3=0
 			total_range_4=0
 			for x in res:
-				if x['voucher_type']=='Sales Invoice':
-					x['po_no']=frappe.db.get_value('Sales Invoice',x['voucher_no'], 'po_no') or ''
+				if x['voucher_type'] in ('Sales Invoice',"Journal Entry") and x.get("outstanding"):
+					if x['voucher_type'] =='Sales Invoice':
+						x['po_no']=frappe.db.get_value('Sales Invoice',x['voucher_no'], 'po_no') or ''
 					outstanding_total+=x['outstanding']
 					total_range_1+=x['range1']
 					total_range_2+=x['range2']

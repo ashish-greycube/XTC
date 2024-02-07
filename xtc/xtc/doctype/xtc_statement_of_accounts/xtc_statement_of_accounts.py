@@ -65,7 +65,7 @@ def get_report_pdf(doc, consolidated=True):
 		
 		payment_terms=frappe.db.get_value('Customer', entry.customer, 'payment_terms')
 		# print(entry.idx,'entry.customer',entry.customer,'payment_terms',payment_terms)
-		if (entry.customer and payment_terms!='CoD'):
+		if (entry.customer):
 		# if (entry.customer):
 			filters = frappe._dict(
 				{

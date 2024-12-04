@@ -14,6 +14,7 @@ from erpnext.accounts.doctype.payment_entry.payment_entry import (
 )
 import re
 import operator
+from datetime import datetime
 from frappe.desk.query_report import get_report_result
 import itertools
 
@@ -282,43 +283,130 @@ class XTCAutomatedPayment(Document):
 
     @frappe.whitelist()
     def download_bank_csv(self):
-        bank_file_header = (
-            (
-                "Second Party Account Type",
-                "Second Party Bank Code",
-                "Second Party Account ID",
-                "Second Party Name",
-                "Amount",
-                "Particular ID",
-            ),
-        )
-        data = frappe.db.sql(
-            """
-                select 
-                    ts.supplier_party_account_type_cf,
-                    ts.supplier_party_bank_code_cf,
-                    ts.supplier_party_account_id_cf,
-                    ts.supplier_party_name_cf, 
-                    tpe.paid_amount,
-                    REPLACE(tpe.name,"-",'')
+
+        xtc_settings = frappe.get_single("XTC Payment Settings")
+        default_account_for_dbs = xtc_settings.default_account_for_dbs
+
+        if self.paid_from == default_account_for_dbs:
+            # PAYMENT DATE
+            payment_date = datetime.strptime(str(self.payment_date), "%Y-%m-%d").strftime("%d%m%Y")
+
+            # ORGANIZATION ID
+            company = frappe.get_doc("Company", self.company)
+            custom_organization_id = company.custom_organization_id if company.custom_organization_id else "N/A"
+
+            bank_file_header = (
+                (
+                    "HEADER",  
+                    payment_date,
+                    custom_organization_id,
+                    self.company
+                ),
+            )
+
+            data = frappe.db.sql(
+                """
+                    select
+                    'PAYMENT' as header_value,
+                    'BPY' as payment_date_value,
+                    acc.custom_originating_account_number as originating_account_number,
+                    acc.account_currency as account_currency,
+                    '' as blank_column,
+                    acc.account_currency as account_currency,
+                    '' as blank_column, DATE_FORMAT(t.payment_date, '%%d%%m%%Y') as payment_date, '' as blank_column, '' as blank_column, 
+                    ts.supplier_name, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column, ts.supplier_party_account_id_cf,  '' as blank_column,
+                    ts.supplier_party_bank_code_cf, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column,
+                    '' as blank_column, '' as blank_column, '' as blank_column, tpe.paid_amount, '' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column,
+                    '20' as transaction_code, '' as blank_column, ts.custom_supplier_party_account_number, ts.custom_supplier_party_account_number, '' as blank_column, '' as blank_column,
+                    ts.custom_supplier_party_account_type_dbs, '' as blank_column, '' as blank_column, '' as blank_column, 'CXBSNS' as purpose, '' as blank_column, 'E' as delivery_method,
+                    '' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column,
+                    MAX(CASE WHEN c.custom_email_order = 'Email 1' THEN c.email_id ELSE '' END) AS email_1,
+                    MAX(CASE WHEN c.custom_email_order = 'Email 2' THEN c.email_id ELSE '' END) AS email_2,
+                    MAX(CASE WHEN c.custom_email_order = 'Email 3' THEN c.email_id ELSE '' END) AS email_3,
+                    MAX(CASE WHEN c.custom_email_order = 'Email 4' THEN c.email_id ELSE '' END) AS email_4,
+                    MAX(CASE WHEN c.custom_email_order = 'Email 5' THEN c.email_id ELSE '' END) AS email_5,
+                    '' as blank_column, '' as blank_column,'' as blank_column, '' as blank_column, '' as blank_column,
+                    pi.bill_no AS purchase_invoice_bill_no
                 from `tabPayment Entry` tpe 
                 inner join (
                     select 
-                        txapd.supplier , txapd.payment_entry 
+                        txapd.supplier , txapd.payment_entry, txap.payment_date, txapd.purchase_invoice
                     from `tabXTC Automated Payment` txap 
                     inner join `tabXTC Automated Payment Detail` txapd on txapd.parent = txap.name
                         and txapd.payment_entry is not null
                     where txap.name = %s
-                    group by supplier , payment_entry 
+                    group by supplier , payment_entry , txap.payment_date, txapd.purchase_invoice
                 ) t on t.payment_entry = tpe.name 
                 inner join tabSupplier ts on ts.name = tpe.party
-        """,
-            (self.name),
-        )
-        if not data:
-            frappe.throw(_("No payment records exist."))
+                inner join `tabAccount` acc on acc.name = tpe.paid_from
+                LEFT JOIN `tabDynamic Link` dl ON dl.link_name = ts.name AND dl.link_doctype = 'Supplier'   
+                LEFT JOIN `tabContact` c ON c.name = dl.parent
+                LEFT JOIN `tabPurchase Invoice` pi ON pi.name = t.purchase_invoice
+                GROUP BY
+                    acc.custom_originating_account_number,
+                    acc.account_currency,
+                    t.payment_date,
+                    ts.supplier_name,
+                    ts.supplier_party_account_id_cf,
+                    ts.supplier_party_bank_code_cf,
+                    ts.custom_supplier_party_account_number,
+                    ts.custom_supplier_party_account_type_dbs,
+                    pi.bill_no
+                """,
+                (self.name), 
+            )
+            if not data:
+                frappe.throw(_("No payment records exist."))
 
-        return bank_file_header + data
+            # footer
+            row_count = len(data)  
+            bank_file_footer = (
+                (
+                    "TRAILER",
+                    row_count
+                ),
+            )
+
+            return bank_file_header + data + bank_file_footer
+
+        else:
+            bank_file_header = (
+                (
+                    "Second Party Account Type",
+                    "Second Party Bank Code",
+                    "Second Party Account ID",
+                    "Second Party Name",
+                    "Amount",
+                    "Particular ID",
+                ),
+            )
+            data = frappe.db.sql(
+                """
+                    select 
+                        ts.supplier_party_account_type_cf,
+                        ts.supplier_party_bank_code_cf,
+                        ts.supplier_party_account_id_cf,
+                        ts.supplier_party_name_cf, 
+                        tpe.paid_amount,
+                        REPLACE(tpe.name,"-",'')
+                    from `tabPayment Entry` tpe 
+                    inner join (
+                        select 
+                            txapd.supplier , txapd.payment_entry 
+                        from `tabXTC Automated Payment` txap 
+                        inner join `tabXTC Automated Payment Detail` txapd on txapd.parent = txap.name
+                            and txapd.payment_entry is not null
+                        where txap.name = %s
+                        group by supplier , payment_entry 
+                    ) t on t.payment_entry = tpe.name 
+                    inner join tabSupplier ts on ts.name = tpe.party
+            """,
+                (self.name),
+            )
+            if not data:
+                frappe.throw(_("No payment records exist."))
+
+            return bank_file_header + data
 
     @frappe.whitelist()
     def send_bank_summary(self):

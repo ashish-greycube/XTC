@@ -326,7 +326,7 @@ class XTCAutomatedPayment(Document):
                     MAX(CASE WHEN c.custom_email_order = 'Email 4' THEN c.email_id ELSE '' END) AS email_4,
                     MAX(CASE WHEN c.custom_email_order = 'Email 5' THEN c.email_id ELSE '' END) AS email_5,
                     '' as blank_column, '' as blank_column,'' as blank_column, '' as blank_column, '' as blank_column,
-                    GROUP_CONCAT(DISTINCT pi.bill_no ORDER BY pi.bill_no) AS bill_no
+                    CONCAT('"', GROUP_CONCAT(DISTINCT pi.bill_no ORDER BY pi.bill_no), '"') AS bill_no
                 from `tabPayment Entry` tpe 
                 inner join (
                     select 

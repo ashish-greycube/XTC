@@ -359,11 +359,14 @@ class XTCAutomatedPayment(Document):
                 frappe.throw(_("No payment records exist."))
 
             # footer
-            row_count = len(data)  
+            row_count = len(data) 
+            total_amount = self.total_amount
+
             bank_file_footer = (
                 (
                     "TRAILER",
-                    row_count
+                    row_count,
+                    total_amount
                 ),
             )
 

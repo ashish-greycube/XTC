@@ -326,7 +326,7 @@ class XTCAutomatedPayment(Document):
                     MAX(CASE WHEN c.custom_email_order = 'Email 4' THEN c.email_id ELSE '' END) AS email_4,
                     MAX(CASE WHEN c.custom_email_order = 'Email 5' THEN c.email_id ELSE '' END) AS email_5,
                     '' as blank_column, '' as blank_column,'' as blank_column, '' as blank_column, '' as blank_column,
-                    pi.bill_no AS purchase_invoice_bill_no
+                    GROUP_CONCAT(DISTINCT pi.bill_no ORDER BY pi.bill_no) AS bill_no
                 from `tabPayment Entry` tpe 
                 inner join (
                     select 
@@ -350,8 +350,7 @@ class XTCAutomatedPayment(Document):
                     ts.supplier_party_account_id_cf,
                     ts.supplier_party_bank_code_cf,
                     ts.custom_supplier_party_account_number,
-                    ts.custom_supplier_party_account_type_dbs,
-                    pi.bill_no
+                    ts.custom_supplier_party_account_type_dbs
                 """,
                 (self.name), 
             )

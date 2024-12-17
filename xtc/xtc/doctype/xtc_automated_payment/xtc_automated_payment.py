@@ -320,11 +320,11 @@ class XTCAutomatedPayment(Document):
                     '20' as transaction_code, '' as blank_column, ts.custom_supplier_party_account_number, ts.custom_supplier_party_account_number, '' as blank_column, '' as blank_column,
                     ts.custom_supplier_party_account_type_dbs, '' as blank_column, '' as blank_column, '' as blank_column, 'CXBSNS' as purpose, '' as blank_column, 'E' as delivery_method,
                     '' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column,
-                    MAX(CASE WHEN c.custom_email_order = 'Email 1' THEN c.email_id ELSE '' END) AS email_1,
-                    MAX(CASE WHEN c.custom_email_order = 'Email 2' THEN c.email_id ELSE '' END) AS email_2,
-                    MAX(CASE WHEN c.custom_email_order = 'Email 3' THEN c.email_id ELSE '' END) AS email_3,
-                    MAX(CASE WHEN c.custom_email_order = 'Email 4' THEN c.email_id ELSE '' END) AS email_4,
-                    MAX(CASE WHEN c.custom_email_order = 'Email 5' THEN c.email_id ELSE '' END) AS email_5,
+                    MAX(CASE WHEN row_num = 1 THEN ce.email_id ELSE '' END) AS email_1,
+                    MAX(CASE WHEN row_num = 2 THEN ce.email_id ELSE '' END) AS email_2,
+                    MAX(CASE WHEN row_num = 3 THEN ce.email_id ELSE '' END) AS email_3,
+                    MAX(CASE WHEN row_num = 4 THEN ce.email_id ELSE '' END) AS email_4,
+                    MAX(CASE WHEN row_num = 5 THEN ce.email_id ELSE '' END) AS email_5,
                     '' as blank_column, '' as blank_column,'' as blank_column, '' as blank_column, '' as blank_column,
                     CONCAT('"', GROUP_CONCAT(DISTINCT pi.bill_no ORDER BY pi.bill_no), '"') AS bill_no
                 from `tabPayment Entry` tpe 
@@ -341,6 +341,13 @@ class XTCAutomatedPayment(Document):
                 inner join `tabAccount` acc on acc.name = tpe.paid_from
                 LEFT JOIN `tabDynamic Link` dl ON dl.link_name = ts.name AND dl.link_doctype = 'Supplier'   
                 LEFT JOIN `tabContact` c ON c.name = dl.parent
+                LEFT JOIN (
+                SELECT 
+                    ce.*,
+                    ROW_NUMBER() OVER (ORDER BY ce.idx) AS row_num
+                FROM `tabContact Email` ce
+                WHERE ce.custom_is_used_for_xtc_payment = 1 AND ce.idx BETWEEN 1 AND 5
+                ) ce ON ce.parent = c.name
                 LEFT JOIN `tabPurchase Invoice` pi ON pi.name = t.purchase_invoice
                 GROUP BY
                     acc.custom_originating_account_number,

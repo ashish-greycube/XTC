@@ -346,8 +346,7 @@ class XTCAutomatedPayment(Document):
                         ce.*, 
                         ROW_NUMBER() OVER (PARTITION BY ce.parent ORDER BY ce.idx) AS row_num
                     FROM `tabContact Email` ce
-                    WHERE ce.custom_is_used_for_xtc_payment = 1 
-                    AND ce.idx BETWEEN 1 AND 5
+                    WHERE ce.custom_is_used_for_xtc_payment = 1
                 ) ce ON ce.parent = c.name
                 LEFT JOIN `tabPurchase Invoice` pi ON pi.name = t.purchase_invoice
                 GROUP BY

@@ -9,14 +9,14 @@ def execute(filters=None):
     posting_date_header = get_posting_date_header(filters)
     custom_organization_id_header = get_custom_organization_id_header(filters)
     company_header = get_company_header(filters)
-    return get_columns(posting_date_header, custom_organization_id_header, company_header), get_data(filters)
+    return get_columns(), get_data(filters, posting_date_header, custom_organization_id_header, company_header)
 
-def get_columns(posting_date_header, custom_organization_id_header, company_header):
+def get_columns():
     cols = f"""
-HEADER,header,Data,,100
-{posting_date_header},dynamic_column,Data,,100
-{custom_organization_id_header},originating_account_number,Data,,150
-{company_header},account_currency,Data,,150
+,header,Data,,100
+,dynamic_column,Data,,100
+,originating_account_number,Data,,150
+,account_currency,Data,,150
 ,blank_column,Data,,10
 ,account_currency_2,Data,,120
 ,blank_column,Data,,10
@@ -76,10 +76,20 @@ HEADER,header,Data,,100
 ,blank_column,Data,,10
 ,blank_column,Data,,10
 ,blank_column,Data,,10
+,email_body,Data,,10
 """
     return csv_to_columns(cols)
 
-def get_data(filters):
+def get_data(filters, posting_date_header, custom_organization_id_header, company_header):
+
+    header_row = {
+        "header": "HEADER",
+        "dynamic_column": posting_date_header,
+        "originating_account_number": custom_organization_id_header,
+        "account_currency": company_header
+    }
+
+
     data = frappe.db.sql(
         """
 SELECT 
@@ -96,7 +106,7 @@ SELECT
     '' as blank_column,'' as blank_column,'CXSALA' AS purpose,'' as blank_column, IFNULL(CASE WHEN emp.prefered_email != '' THEN 'E' ELSE '' END, '') AS delivery_method,
     '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column,
     IFNULL(emp.prefered_email, '') AS email_1,'' as email_2,'' as email_3,'' as email_4,'' as email_5,'' as blank_column,'' as blank_column,'' as blank_column,
-    '' as blank_column,'' as blank_column
+    '' as blank_column,'' as blank_column, ss.custom_email_body_for_bank_file as email_body
 FROM 
     `tabPayroll Entry` pe
 INNER JOIN 
@@ -134,9 +144,11 @@ ORDER BY
         "originating_account_number": total_rounded_sum,
     }
 
-    data.append(footer_row)
+    # data.append(footer_row)
     
-    return data 
+    return [header_row] + data + [footer_row] 
+
+
 def get_posting_date_header(filters):
     """
     Fetch the posting_date of the first matching Payroll Entry to use as the header.

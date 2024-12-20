@@ -18,6 +18,7 @@
   "supplier",
   "based_on_payment_terms",
   "fetch_accounts_payable",
+  "total_amount",
   "column_break_5",
   "from_due_date",
   "to_due_date",
@@ -29,7 +30,6 @@
   "hidden_field",
   "sb_ot_cb_1",
   "sb_ot_cb_2",
-  "total_amount",
   "sb_supplier",
   "suppliers",
   "amended_from"
@@ -200,7 +200,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-06-16 22:48:08.840785",
+ "modified": "2024-12-18 20:32:00.630549",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "XTC Automated Payment",
@@ -250,5 +250,6 @@
   }
  ],
  "sort_field": "modified",
- "sort_order": "DESC"
+ "sort_order": "DESC",
+ "states": []
 }

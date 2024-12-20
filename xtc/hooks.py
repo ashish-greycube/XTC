@@ -117,6 +117,9 @@ doc_events = {
     "Payment Entry": {
         "before_cancel": "xtc.xtc.doctype.xtc_automated_payment.xtc_automated_payment.before_cancel_payment_entry"
     },
+    "XTC Automated Payment":{
+        "before_save" :"xtc.xtc.doctype.xtc_automated_payment.xtc_automated_payment.set_email_cc"
+    }
 }
 
 # Scheduled Tasks

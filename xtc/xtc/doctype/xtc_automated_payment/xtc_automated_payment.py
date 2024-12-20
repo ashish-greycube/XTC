@@ -506,8 +506,14 @@ class XTCAutomatedPayment(Document):
 
             context = {"doc": self.as_dict(), "supplier_details": supplier_details}
 
+            cc_recipients = [
+                getattr(supplier, f"custom_cc_{i}", None) for i in range(1, 6)
+            ]
+            cc_recipients = [email for email in cc_recipients if email]
+
             frappe.sendmail(
                 recipients=supplier.email_id,
+                cc=cc_recipients,
                 subject=frappe.render_template(email_template.subject, context=context),
                 message=frappe.render_template(
                     email_template.response, context=context
@@ -590,3 +596,38 @@ def before_cancel_payment_entry(doc, method):
     )
     for d in auto_payment:
         frappe.get_doc("XTC Automated Payment", d[0]).set_payment_entry_status()
+
+
+@frappe.whitelist()
+def set_email_cc(doc, method):
+    contact_names = [row.contact for row in doc.suppliers if row.contact]
+
+    if contact_names:
+        for contact in contact_names:
+            email_list = frappe.get_list(
+                "Contact Email",
+                fields=["email_id", "idx"],
+                parent_doctype= "Contact",
+                filters={
+                    "parent": contact,
+                    "custom_is_used_for_xtc_payment": 1,
+                    "is_primary": 0,
+                },
+                order_by="idx asc"
+            )
+
+            if email_list:
+                email_idx = 0
+                for supplier_row in doc.suppliers:
+                    if supplier_row.contact == contact:
+                        for email_row in email_list:
+                            if email_idx < 5:
+                                setattr(supplier_row, f"custom_cc_{email_idx + 1}", email_row["email_id"])
+                                email_idx += 1
+
+    else:
+        frappe.msgprint({
+            "title": "No Contacts",
+            "message": "Contact not found.",
+        })
+

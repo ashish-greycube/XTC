@@ -30,7 +30,7 @@ def get_columns():
 ,blank_column,Data,,10
 ,employee_account_id,Data,,120
 ,blank_column,Data,,10
-,bank_code,Data,,120
+,bank_code,Text,,120
 ,blank_column,Data,,10
 ,blank_column,Data,,10
 ,blank_column,Data,,10

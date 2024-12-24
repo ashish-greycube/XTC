@@ -23,14 +23,14 @@ def get_columns():
 ,posting_date,Data,,120
 ,blank_column,Data,,10
 ,blank_column,Data,,10
-,employee_bank_account,,120
+,employee_bank_account,Data,,120
 ,blank_column,Data,,10
 ,blank_column,Data,,10
 ,blank_column,Data,,10
 ,blank_column,Data,,10
-,employee_account_id,,120
+,employee_account_id,Data,,120
 ,blank_column,Data,,10
-,bank_code,,120
+,bank_code,Data,,120
 ,blank_column,Data,,10
 ,blank_column,Data,,10
 ,blank_column,Data,,10
@@ -51,7 +51,7 @@ def get_columns():
 ,blank_column,Data,,10
 ,blank_column,Data,,10
 ,blank_column,Data,,10
-,employee_account_type,,100
+,employee_account_type,Data,,100
 ,blank_column,Data,,10
 ,blank_column,Data,,10
 ,blank_column,Data,,10

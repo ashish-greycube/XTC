@@ -23,12 +23,12 @@ def get_columns():
 ,posting_date,Data,,120
 ,blank_column,Data,,10
 ,blank_column,Data,,10
-,employee_bank_account,Data,,120
+,employee_bank_account,Text,,120
 ,blank_column,Data,,10
 ,blank_column,Data,,10
 ,blank_column,Data,,10
 ,blank_column,Data,,10
-,employee_account_id,Data,,120
+,employee_account_id,Text,,120
 ,blank_column,Data,,10
 ,bank_code,Text,,120
 ,blank_column,Data,,10

@@ -101,12 +101,12 @@ SELECT
     IFNULL(emp.custom_employee_bank_account_name, '') AS employee_bank_account, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column,
     IFNULL(emp.custom_employee_account_id, '') AS employee_account_id,  '' as blank_column, IFNULL(CASE WHEN emp.custom_employee_account_type = 'B' THEN emp.custom_bank_code ELSE '' END, '') AS bank_code,
     '' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column,
-    IFNULL(ss.rounded_total, 0) AS rounded_total,'' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column, '22' AS transaction_code,'' as blank_column,
+    IFNULL(ss.base_net_pay, 0) AS rounded_total,'' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column, '22' AS transaction_code,'' as blank_column,
     '' as blank_column,'' as blank_column,'' as blank_column,'' as blank_column,IFNULL(emp.custom_employee_account_type, '') AS employee_account_type,'' as blank_column,
     '' as blank_column,'' as blank_column,'CXSALA' AS purpose,'' as blank_column, IFNULL(CASE WHEN emp.prefered_email != '' THEN 'E' ELSE '' END, '') AS delivery_method,
     '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column, '' as blank_column,
     IFNULL(emp.prefered_email, '') AS email_1,'' as email_2,'' as email_3,'' as email_4,'' as email_5,'' as blank_column,'' as blank_column,'' as blank_column,
-    '' as blank_column,'' as blank_column, ss.custom_email_body_for_bank_file as email_body
+    '' as blank_column,'' as blank_column, pe.custom_remarks as email_body
 FROM 
     `tabPayroll Entry` pe
 INNER JOIN 

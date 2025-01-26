@@ -8,6 +8,8 @@
   "xtc_automated_payment",
   "bank_payment_summary_format",
   "supplier_payment_advice_format",
+  "default_account_for_hang_seng",
+  "default_account_for_dbs",
   "cb_1_column",
   "bank_payment_summary_email_template",
   "supplier_payment_advice_email_template",
@@ -61,12 +63,24 @@
    "label": "Email Address for Email Bank summary ",
    "options": "Email",
    "reqd": 1
+  },
+  {
+   "fieldname": "default_account_for_hang_seng",
+   "fieldtype": "Link",
+   "label": "Default Account for Hang Seng",
+   "options": "Account"
+  },
+  {
+   "fieldname": "default_account_for_dbs",
+   "fieldtype": "Link",
+   "label": "Default Account for DBS",
+   "options": "Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-05-10 14:40:04.189522",
+ "modified": "2024-11-28 20:17:57.392335",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "XTC Payment Settings",
@@ -84,5 +98,6 @@
   }
  ],
  "sort_field": "modified",
- "sort_order": "DESC"
+ "sort_order": "DESC",
+ "states": []
 }

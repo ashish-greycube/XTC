@@ -23,7 +23,7 @@ from erpnext.accounts.report.accounts_receivable.accounts_receivable import (
 )
 import functools
 from frappe.contacts.doctype.address.address import get_address_display
-from frappe.email.smtp import get_default_outgoing_email_account
+#from frappe.email.smtp import get_default_outgoing_email_account
 
 
 class XTCStatementOfAccounts(Document):

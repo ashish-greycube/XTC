@@ -45,6 +45,7 @@ class XTCAutomatedPayment(Document):
         for idx, d in enumerate(self.suppliers):
             d.idx = idx
 
+
     @frappe.whitelist()
     def close_payment(self):
         for d in frappe.get_all(
@@ -119,18 +120,46 @@ class XTCAutomatedPayment(Document):
                 _("Please set email id for suppliers: %s" % ", ".join(supplier_emails))
             )
 
+    # def on_cancel(self):
+    #     payment_entry = [
+    #         d.payment_entry for d in self.payment_details if d.payment_entry
+    #     ]
+    #     if payment_entry:
+    #         msg = _("Please cancel these linked Payment Entries: {0}").format(
+    #             ", ".join(
+    #                 get_link_to_form("Payment Entry", d) for d in set(payment_entry)
+    #             )
+    #         )
+    #         frappe.throw(msg)
+    #     self.set_payment_entry_status()
+
     def on_cancel(self):
-        payment_entry = [
-            d.payment_entry for d in self.payment_details if d.payment_entry
-        ]
-        if payment_entry:
-            msg = _("Please cancel these linked Payment Entries: {0}").format(
-                ", ".join(
-                    get_link_to_form("Payment Entry", d) for d in set(payment_entry)
-                )
-            )
-            frappe.throw(msg)
-        self.set_payment_entry_status()
+        payment_entries = frappe.get_all("Payment Entry", filters={"reference_no": self.name, "docstatus": 0})
+
+        if payment_entries:
+            for payment_entry in payment_entries:
+                try:
+                    payment_entry_doc = frappe.get_doc("Payment Entry", payment_entry.name)
+
+                    frappe.db.sql(
+                        """
+                        UPDATE `tabXTC Automated Payment Detail`
+                        SET payment_entry = NULL
+                        WHERE payment_entry = %s
+                        """,
+                        (payment_entry.name,)
+                    )
+
+                    if payment_entry_doc.docstatus == 0:
+                        frappe.delete_doc("Payment Entry", payment_entry_doc.name, ignore_permissions=True)
+                        frappe.msgprint(f"Payment Entry {payment_entry_doc.name} has been deleted as part of the cancellation.")
+                    else:
+                        frappe.msgprint(f"Payment Entry {payment_entry_doc.name} is in Submitted status and cannot be deleted.")
+
+                except Exception as e:
+                    frappe.throw(f"Error deleting Payment Entry {payment_entry.name}: {str(e)}")
+        else:
+            frappe.msgprint("No linked draft Payment Entry found to delete.")
 
     @frappe.whitelist()
     def _get_accounts_payable(self):

@@ -157,7 +157,8 @@ class XTCAutomatedPayment(Document):
                     frappe.delete_doc("Payment Entry", payment_entry_doc.name, ignore_permissions=True)
                     frappe.msgprint(f"Payment Entry {payment_entry_doc.name} has been deleted as part of the cancellation.")
 
-        frappe.msgprint("No linked Payment Entries found.")
+        if not payment_entries:
+            frappe.msgprint("No linked Payment Entries found.")
 
 
     @frappe.whitelist()

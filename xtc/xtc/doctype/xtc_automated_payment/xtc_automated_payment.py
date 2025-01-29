@@ -137,14 +137,15 @@ class XTCAutomatedPayment(Document):
         payment_entries = frappe.get_all("Payment Entry", filters={"reference_no": self.name})
 
         if payment_entries:
+            linked_entries = []
+            
             for payment_entry in payment_entries:
                 payment_entry_doc = frappe.get_doc("Payment Entry", payment_entry.name)
 
                 if payment_entry_doc.docstatus == 1:
                     payment_entry_link = get_link_to_form("Payment Entry", payment_entry_doc.name)
-                    frappe.throw(
-                        f"Cannot delete or cancel because {self.name} is linked with Payment Entry {payment_entry_link}."
-                    )
+                    linked_entries.append(payment_entry_link)
+
                 elif payment_entry_doc.docstatus == 0:
                     frappe.db.sql(
                         """
@@ -157,8 +158,14 @@ class XTCAutomatedPayment(Document):
                     frappe.delete_doc("Payment Entry", payment_entry_doc.name, ignore_permissions=True)
                     frappe.msgprint(f"Payment Entry {payment_entry_doc.name} has been deleted as part of the cancellation.")
 
+            if linked_entries:
+                frappe.throw(
+                    f"Cannot delete or cancel because {self.name} is linked with Payment Entries: {', '.join(linked_entries)}."
+                )
+
         if not payment_entries:
             frappe.msgprint("No linked Payment Entries found.")
+
 
 
     @frappe.whitelist()

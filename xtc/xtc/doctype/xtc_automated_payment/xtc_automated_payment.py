@@ -134,13 +134,18 @@ class XTCAutomatedPayment(Document):
     #     self.set_payment_entry_status()
 
     def on_cancel(self):
-        payment_entries = frappe.get_all("Payment Entry", filters={"reference_no": self.name, "docstatus": 0})
+        payment_entries = frappe.get_all("Payment Entry", filters={"reference_no": self.name})
 
         if payment_entries:
             for payment_entry in payment_entries:
-                try:
-                    payment_entry_doc = frappe.get_doc("Payment Entry", payment_entry.name)
+                payment_entry_doc = frappe.get_doc("Payment Entry", payment_entry.name)
 
+                if payment_entry_doc.docstatus == 1:
+                    payment_entry_link = get_link_to_form("Payment Entry", payment_entry_doc.name)
+                    frappe.throw(
+                        f"Cannot delete or cancel because {self.name} is linked with Payment Entry {payment_entry_link}."
+                    )
+                elif payment_entry_doc.docstatus == 0:
                     frappe.db.sql(
                         """
                         UPDATE `tabXTC Automated Payment Detail`
@@ -149,17 +154,11 @@ class XTCAutomatedPayment(Document):
                         """,
                         (payment_entry.name,)
                     )
+                    frappe.delete_doc("Payment Entry", payment_entry_doc.name, ignore_permissions=True)
+                    frappe.msgprint(f"Payment Entry {payment_entry_doc.name} has been deleted as part of the cancellation.")
 
-                    if payment_entry_doc.docstatus == 0:
-                        frappe.delete_doc("Payment Entry", payment_entry_doc.name, ignore_permissions=True)
-                        frappe.msgprint(f"Payment Entry {payment_entry_doc.name} has been deleted as part of the cancellation.")
-                    else:
-                        frappe.msgprint(f"Payment Entry {payment_entry_doc.name} is in Submitted status and cannot be deleted.")
+        frappe.msgprint("No linked Payment Entries found.")
 
-                except Exception as e:
-                    frappe.throw(f"Error deleting Payment Entry {payment_entry.name}: {str(e)}")
-        else:
-            frappe.msgprint("No linked draft Payment Entry found to delete.")
 
     @frappe.whitelist()
     def _get_accounts_payable(self):

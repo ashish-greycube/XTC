@@ -1,0 +1,49 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"bE4x6-AtvE\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">XTC Mobile API</span>\",\"col\":12}},{\"id\":\"jfsE486m8f\",\"type\":\"card\",\"data\":{\"card_name\":\"Settings\",\"col\":4}}]",
+ "creation": "2024-11-28 19:46:57.074338",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "non-profit",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "XTC",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Settings",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "XTC Settings",
+   "link_count": 0,
+   "link_to": "XTC Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-02-17 19:01:19.528304",
+ "modified_by": "Administrator",
+ "module": "XTC",
+ "name": "XTC",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 2.0,
+ "shortcuts": [],
+ "title": "XTC"
+}

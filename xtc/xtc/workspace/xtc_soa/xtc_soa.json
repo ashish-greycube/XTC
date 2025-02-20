@@ -1,0 +1,88 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"lTtpfRXyUz\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">XTC Statment of Accounts</span>\",\"col\":12}},{\"id\":\"E7788lcJDp\",\"type\":\"card\",\"data\":{\"card_name\":\"Link\",\"col\":5}},{\"id\":\"Ys47wOKnSK\",\"type\":\"card\",\"data\":{\"card_name\":\"Settings\",\"col\":4}}]",
+ "creation": "2024-11-28 19:49:54.425147",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "non-profit",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "XTC SOA",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Settings",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "XTC Payment Settings",
+   "link_count": 0,
+   "link_to": "XTC Payment Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "XTC Label Settings",
+   "link_count": 0,
+   "link_to": "XTC Label Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Link",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "XTC Statement Of Accounts",
+   "link_count": 0,
+   "link_to": "XTC Statement Of Accounts",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "XTC Automated Payment",
+   "link_count": 0,
+   "link_to": "XTC Automated Payment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-02-17 19:01:04.336615",
+ "modified_by": "Administrator",
+ "module": "XTC",
+ "name": "XTC SOA",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 3.0,
+ "shortcuts": [],
+ "title": "XTC SOA"
+}

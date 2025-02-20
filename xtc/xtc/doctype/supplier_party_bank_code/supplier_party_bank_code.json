@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:bank_code",
  "creation": "2023-04-22 12:39:16.769720",
@@ -31,7 +32,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-24 16:06:54.939961",
+ "modified": "2025-01-27 19:07:11.014465",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "Supplier Party Bank Code",
@@ -101,5 +102,6 @@
  "search_fields": "bank_name",
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "title_field": "bank_name"
 }

@@ -67,6 +67,7 @@
   {
    "fieldname": "default_account_for_hang_seng",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Default Account for Hang Seng",
    "options": "Account"
   },
@@ -80,7 +81,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-28 20:17:57.392335",
+ "modified": "2025-02-17 15:32:37.618073",
  "modified_by": "Administrator",
  "module": "XTC",
  "name": "XTC Payment Settings",

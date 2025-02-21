@@ -363,9 +363,19 @@ class XTCAutomatedPayment(Document):
                     MAX(CASE WHEN row_num = 5 THEN ce.email_id ELSE '' END) AS email_5,
                     '' as blank_column, '' as blank_column,'' as blank_column, '' as blank_column, '' as blank_column,
                     CASE 
-                        WHEN SUM(CASE WHEN pi.bill_no IS NOT NULL AND pi.bill_no <> '' THEN 1 ELSE 0 END) = 0
-                        THEN 'Invoice payments'
-                        ELSE GROUP_CONCAT(DISTINCT pi.bill_no ORDER BY pi.bill_no ASC SEPARATOR ', ') 
+                    WHEN 
+                        MAX(CASE WHEN row_num = 1 THEN ce.email_id ELSE '' END) <> '' OR
+                        MAX(CASE WHEN row_num = 2 THEN ce.email_id ELSE '' END) <> '' OR
+                        MAX(CASE WHEN row_num = 3 THEN ce.email_id ELSE '' END) <> '' OR
+                        MAX(CASE WHEN row_num = 4 THEN ce.email_id ELSE '' END) <> '' OR
+                        MAX(CASE WHEN row_num = 5 THEN ce.email_id ELSE '' END) <> ''
+                    THEN 
+                        CASE 
+                            WHEN SUM(CASE WHEN pi.bill_no IS NOT NULL AND pi.bill_no <> '' THEN 1 ELSE 0 END) = 0
+                            THEN 'Invoice payments'
+                            ELSE GROUP_CONCAT(DISTINCT pi.bill_no ORDER BY pi.bill_no ASC SEPARATOR ', ') 
+                        END 
+                    ELSE NULL 
                 END AS bill_no
                 from `tabPayment Entry` tpe 
                 inner join (

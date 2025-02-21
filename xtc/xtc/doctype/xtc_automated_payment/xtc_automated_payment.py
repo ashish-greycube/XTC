@@ -373,7 +373,12 @@ class XTCAutomatedPayment(Document):
                         CASE 
                             WHEN SUM(CASE WHEN pi.bill_no IS NOT NULL AND pi.bill_no <> '' THEN 1 ELSE 0 END) = 0
                             THEN 'Invoice payments'
-                            ELSE GROUP_CONCAT(DISTINCT pi.bill_no ORDER BY pi.bill_no ASC SEPARATOR ', ') 
+                            ELSE 
+                                CASE 
+                                    WHEN COUNT(DISTINCT NULLIF(pi.bill_no, '')) = 1 
+                                    THEN MAX(NULLIF(pi.bill_no, '')) 
+                                    ELSE GROUP_CONCAT(DISTINCT NULLIF(pi.bill_no, '') ORDER BY pi.bill_no ASC SEPARATOR ', ') 
+                                END
                         END 
                     ELSE NULL 
                 END AS bill_no

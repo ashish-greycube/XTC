@@ -372,7 +372,7 @@ class XTCAutomatedPayment(Document):
                     THEN 
                         CASE 
                             WHEN SUM(CASE WHEN pi.bill_no IS NOT NULL AND pi.bill_no <> '' THEN 1 ELSE 0 END) = 0
-                            THEN 'Invoice payments'
+                            THEN 'Invoice Payments'
                             ELSE 
                                 CASE 
                                     WHEN COUNT(DISTINCT NULLIF(pi.bill_no, '')) = 1 
